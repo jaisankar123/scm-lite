@@ -61,6 +61,16 @@ def device_data_stream(request: Request):
 def dashboard(request: Request):
     return templates.TemplateResponse("dashboard.html", {"request": request})
 
+#Create Shipment
+@app.get("/create-shipment", response_class=HTMLResponse)
+def create_shipment(request: Request):
+    return templates.TemplateResponse("create-shipment.html", {"request": request})
+
+#My Account
+@app.get("/myaccount", response_class=HTMLResponse)
+def my_account(request: Request):
+    return templates.TemplateResponse("myaccount.html", {"request": request})
+
 
 # ------------------ 1. GET DEVICE ID LIST ------------------
 # @app.get("/devices/all")

@@ -1,0 +1,182 @@
+/* ==========================
+FORM LAYOUT STYLES (shipment-form-layout.css)
+========================== */
+
+/* Center the form content and define the outer wrapper box */
+.main-area .content.form-page {
+    /* Adjust margin-top to place the content higher, below the header */
+    margin-top: 20px; 
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: calc(100vh - 80px); /* Fill remaining screen space */
+}
+
+/* Wrapper mimicking the central, white form card with subtle background gradient */
+.form-wrapper {
+    background-color: white; 
+    padding: 30px 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 900px; 
+    text-align: center;
+    position: relative;
+    /* Adding a subtle background gradient effect similar to the screenshot */
+    overflow: hidden;
+}
+
+/* Pseudo-elements for the pink/yellow gradient background behind the form wrapper */
+.form-wrapper::before {
+    content: '';
+    position: absolute;
+    top: -10%;
+    left: -10%;
+    width: 120%;
+    height: 120%;
+    background: linear-gradient(135deg, #fce0e0 0%, #cfd9df 50%, #fffec0 100%);
+    opacity: 0.3;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.shipment-form, 
+.page-title,
+.form-subtitle {
+    position: relative; /* Ensure text/form sits above the gradient */
+    z-index: 1;
+}
+
+
+/* Titles */
+.page-title {
+    font-size: 2.2em;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 5px;
+}
+
+.form-subtitle {
+    font-size: 1em;
+    font-weight: 400;
+    color: #666;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+}
+
+/* Input Grid Layout - KEY FOR SIDE-BY-SIDE */
+.shipment-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-grid {
+    display: flex;
+    gap: 40px;
+    margin-bottom: 30px;
+}
+
+.form-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Input Fields Styling to match screenshot's light fields */
+.input-group {
+    margin-bottom: 18px;
+    text-align: left;
+}
+
+.input-group label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 4px;
+    font-size: 0.95em;
+    color: #333;
+}
+
+.input-group input,
+.input-group select {
+    width: 100%;
+    padding: 12px 15px;
+    background-color: #f0f0f0; /* Light grey background to match screenshot */
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1em;
+    color: var(--text-dark);
+    transition: 0.2s;
+}
+
+/* Use index.css focus/hover logic */
+.input-group input:focus,
+.input-group select:focus {
+    border-color: var(--accent); /* Uses purple accent from index.css */
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(94, 53, 177, 0.2);
+}
+
+/* Validation Error Style */
+.input-group .is-invalid {
+    border: 2px solid #ff6347 !important; /* Bright red border for error */
+    box-shadow: 0 0 5px rgba(255, 99, 71, 0.5);
+}
+
+
+/* Action Buttons Container */
+.form-actions {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    padding-top: 20px;
+}
+
+/* Button Styling (Overriding index.css 'cta-btn' for specific colors) */
+.cta-btn {
+    padding: 12px 30px;
+    font-weight: 600;
+    font-size: 1.1em;
+    border: none;
+    color: white;
+    /* Use the global hover/scale from index.css for the effect */
+}
+
+/* CREATE SHIPMENT Button: Blue/Purple Gradient from screenshot */
+.create-btn-style {
+    background: linear-gradient(90deg, #4e54c8, #8f94fb);
+}
+
+/* CLEAR DETAILS Button: Red Gradient from screenshot */
+.clear-btn-style {
+    background: linear-gradient(90deg, #f05053, #e10000);
+}
+
+
+/* Responsive adjustment */
+@media (max-width: 768px) {
+    .form-grid {
+        flex-direction: column;
+        gap: 0;
+    }
+    .form-wrapper {
+        padding: 20px;
+        margin-top: 10px;
+    }
+    .form-actions {
+        flex-direction: column;
+        gap: 15px;
+    }
+    .cta-btn {
+        width: 100%;
+    }
+}
+
+.active-sidebar-link {
+    background: var(--hover-gradient); /* Use existing hover background */
+    border-radius: 8px;
+    margin: 6px 12px;
+    transform: translateX(8px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
