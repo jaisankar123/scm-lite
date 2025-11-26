@@ -46,6 +46,16 @@ background: radial-gradient(circle at center, #ffffff66, #d0d0ff, #b4d8ff);
 /* ==========================
 SIDEBAR (DESKTOP + MOBILE)
 ========================== */
+
+.active-sidebar-link {
+    background: var(--hover-gradient); /* Use existing hover background */
+    border-radius: 8px;
+    margin: 6px 12px;
+    transform: translateX(8px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+
 .desktop-sidebar {
 position: fixed;
 top: 0;

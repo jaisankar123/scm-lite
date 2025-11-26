@@ -1,0 +1,126 @@
+/* ==========================
+DASHBOARD SPECIFIC STYLES (Add to index.css or use as a separate dashboard.css file)
+========================== */
+
+.active-sidebar-link {
+    background: var(--hover-gradient); /* Use existing hover background */
+    border-radius: 8px;
+    margin: 6px 12px;
+    transform: translateX(8px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+
+/* Full height for the main content area */
+.content.dashboard-split {
+    display: flex; /* <-- THIS IS THE KEY TO SIDE-BY-SIDE LAYOUT */
+    padding: 0; /* Remove padding from main content */
+    margin-top: 0; /* Remove top margin */
+}
+
+.split-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px;
+    height: calc(100vh - 84px); /* Full height minus header height (approx 84px) */
+    
+    /* Ensure illustrations/content don't overflow */
+    overflow: hidden; 
+}
+
+/* Left Section Background (Light Blue/Purple split) */
+.left-section {
+    background: linear-gradient(135deg, #e0eafc 0%, #cfd9df 100%); 
+}
+
+/* Right Section Background (Light Red/Pink split) */
+.right-section {
+    background: linear-gradient(135deg, #fce0e0 0%, #f7c9c9 100%);
+}
+
+.section-title {
+    font-size: 2.2em;
+    font-weight: 300;
+    margin-bottom: 30px;
+    color: var(--text-dark);
+}
+
+/* Custom button styling */
+.cta-btn.create-btn,
+.cta-btn.data-btn {
+    padding: 15px 35px;
+    font-size: 1.1em;
+    font-weight: bold;
+    background: white;
+    color: #5d619a; /* Deep blue/purple text color */
+    border: none;
+    border-radius: 4px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: 0.18s;
+}
+
+/* Hover effect: Light yellow gradient on the box */
+.cta-btn.create-btn:hover,
+.cta-btn.data-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    color: #4b4e7e;
+    /* Light yellow gradient for hover */
+    background: linear-gradient(90deg, #fffed7, #fff6b5); 
+}
+
+.illustration-placeholder {
+    /* Placeholder for the background illustrations */
+    margin-top: 60px;
+    min-height: 250px; 
+    width: 100%;
+}
+
+/* Sidebar Customization for Dashboard Look */
+.logout-link {
+    margin-top: auto; /* Push the logout button to the very bottom */
+}
+
+.logout-btn {
+    display: block;
+    padding: 15px 25px;
+    background-color: #ff0000; /* Red color for log out button area */
+    color: white !important; /* Force white text */
+    text-decoration: none;
+    text-align: left;
+    transition: background-color 0.3s;
+}
+
+.logout-btn:hover {
+    background-color: #cc0000;
+    transform: none !important; /* Override hover transform from index.css */
+}
+
+.logout-link a {
+    margin: 0 !important; /* Remove margin from the link element */
+    border-radius: 0 !important; /* Remove border-radius */
+}
+
+/* Header customization for the specific dashboard welcome message */
+.header-title {
+    font-size: 1.8em;
+    font-weight: normal;
+    color: #333;
+    margin: 0;
+}
+/* Hide default logo text when custom header title is used */
+header .logo {
+    display: none; 
+}
+header .logo-container {
+    gap: 0;
+}
+@media (max-width: 999px) {
+    .header-title {
+        font-size: 1.4em;
+    }
+}

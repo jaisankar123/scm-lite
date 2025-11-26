@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SCMXpertLite Dashboard</title>
+    <link rel="stylesheet" href="static/index.css" /> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="static/dashboard.css" />
+</head>
+<body>
+
+<div class="bg"></div>
+
+<nav class="desktop-sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <h2 class="logo" style="color: white; font-size: 1.5em; font-weight: 700;"></h2>
+        <div id="sidebar-closer" aria-label="Close sidebar" role="button" tabindex="0">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+    <ul>
+        <li><a href="/"><i></i> Home</a></li>
+
+        <li class="active-sidebar-link"><a href="/dashboard"><i></i> Dashboard</a></li>
+        <li><a href="/myaccount"><i></i> My Account</a></li>
+        <li><a href="/myshipment"><i></i> My Shipment</a></li>
+        <li><a href="/create-shipment"><i></i> New Shipment</a></li>
+        <li><a href="/device-data-stream"><i></i> Device Data</a></li>
+       
+    </ul>
+</nav>
+
+<div class="main-area">
+    
+    <header>
+        <div class="logo-container">
+            <div id="hamburger" aria-label="Open sidebar" role="button" tabindex="0">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <h1 class="header-title"> Welcome to SCMXpertLite</h1>
+        </div>
+
+        <div class="menu">
+            </div>
+    </header>
+
+    <main class="content dashboard-split" role="main">
+        
+        <div class="split-section left-section">
+            <h2 class="section-title">Create a New Shipment</h2>
+            <a href="/create-shipment" class="cta-btn create-btn">CREATE SHIPMENT</a>
+            <div class="illustration-placeholder">
+                            </div>
+        </div>
+
+        <div class="split-section right-section">
+            <h2 class="section-title">To see Device Data Stream.</h2>
+            <a href="/device-data-stream" class="cta-btn data-btn">DEVICE DATA STREAM</a>
+            <div class="illustration-placeholder">
+                            </div>
+        </div>
+    </main>
+</div>
+
+<script src="static/index.js"></script>
+<script src="static/dashboard.js"></script>
+
+</body>
+</html>

@@ -56,6 +56,11 @@ def device_data_stream(request: Request):
     return templates.TemplateResponse("device-data-stream.html", {"request": request})
 
 
+#Dashboard
+@app.get("/dashboard", response_class=HTMLResponse)
+def dashboard(request: Request):
+    return templates.TemplateResponse("dashboard.html", {"request": request})
+
 
 # ------------------ 1. GET DEVICE ID LIST ------------------
 # @app.get("/devices/all")
