@@ -71,7 +71,15 @@ def create_shipment(request: Request):
 def my_account(request: Request):
     return templates.TemplateResponse("myaccount.html", {"request": request})
 
+#login
+@app.get("/login", response_class=HTMLResponse)
+def login(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
 
+# Signup (NEW ROUTE ADDED)
+@app.get("/signup", response_class=HTMLResponse)
+def signup(request: Request):
+    return templates.TemplateResponse("signup.html", {"request": request})
 # ------------------ 1. GET DEVICE ID LIST ------------------
 # @app.get("/devices/all")
 # def get_all_device_ids() -> List[str]:

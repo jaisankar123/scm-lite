@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Neon Login</title>
+    <link rel="stylesheet" href="/static/login.css" />
+</head>
+<body>
+    <div class="bg"></div> 
+
+    <nav class="desktop-sidebar" id="sidebar">
+        <div class="sidebar-header">Sidebar Menu</div>
+        <ul>
+            <li><a href="/">Home</a></li>
+
+            <li><a href="/dashboard">Dashboard</a></li>
+            <li><a href="/myaccount">My Account</a></li>
+            <li><a href="/myshipment">My Shipments</a></li>
+            <li><a href="/create-shipment">New Shipment</a></li>
+            <li><a href="/device-stream">Device Data</a></li>
+        </ul>
+    </nav>
+    <div class="main-area">
+
+        <header>
+            <div class="logo-container">
+                <h2 class="logo">Login</h2> 
+            </div>
+
+            <div id="hamburger" aria-label="Open sidebar" role="button" tabindex="0">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+            <div class="menu">
+                </div>
+        </header>
+        <main class="content" role="main">
+            <div class="login-container"> 
+                <h2>Login</h2>
+
+                <form id="loginForm">
+                    <div class="input-group">
+                        <label>Email</label>
+                        <input type="email" id="email" placeholder="Enter your email" required />
+                    </div>
+
+                    <div class="input-group">
+                        <label>Password</label>
+                        <input type="password" id="password" placeholder="Enter your password" required />
+                    </div>
+
+                    <p id="message"></p>
+
+                    <button type="submit" class="login-btn">Login</button>
+                    
+                    <p class="register-link-container">
+                        Don't have an account? <a href="/signup" class="register-link">Register</a>
+                    </p>
+                    </form>
+            </div>
+        </main>
+        </div>
+    <script src="/static/index.js"></script>    
+    <script src="/static/login.js"></script>
+    <script src="/static/device-data-stream.js"></script>
+</body>
+</html>

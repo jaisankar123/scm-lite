@@ -1,0 +1,364 @@
+/* ==========================
+LIGHT GRADIENT THEME (Copied from index.css)
+========================== */
+:root {
+/* UPDATED TO MATCH index.css */
+--main-gradient: linear-gradient(135deg, #b3e5fc, #e1bee7, #ffecb3);
+--sidebar-gradient: linear-gradient(180deg, #ffffff, #e4dafb);
+--hover-gradient: linear-gradient(90deg, #d8c2ff, #a596f7); /* New soft gradient for hover */
+--light-bg: #f6f8ff;
+--text-dark: #1b1b1b;
+--accent: #5e35b1; /* Purple accent */
+--sidebar-width: 280px;
+/* Removed --hover-glow */
+}
+
+/* ==========================
+GLOBAL RESET
+========================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+  }
+
+/* ==========================
+BACKGROUND
+========================== */
+body {
+background: var(--main-gradient);
+color: var(--text-dark);
+overflow-x: hidden;
+}
+
+/* Soft Fog Visual */
+.bg {
+position: fixed;
+top: 0;
+left: 0;
+width: 120%;
+height: 120%;
+z-index: -1;
+opacity: 0.3;
+background: radial-gradient(circle at center, #ffffff66, #d0d0ff, #b4d8ff);
+}
+
+/* ==========================
+SIDEBAR (DESKTOP + MOBILE)
+========================== */
+.desktop-sidebar {
+position: fixed;
+top: 0;
+left: 0;
+width: var(--sidebar-width);
+height: 100vh;
+/* UPDATED to use var(--sidebar-gradient) */
+background: var(--sidebar-gradient);
+border-right: 2px solid rgba(0,0,0,0.1);
+padding-top: 20px;
+
+
+transform: translateX(-100%);
+transition: transform 0.38s cubic-bezier(.2,.9,.2,1);
+z-index: 50;
+
+
+}
+
+/* Sidebar open */
+.desktop-sidebar.open {
+transform: translateX(0);
+}
+
+/* Desktop = always open */
+@media (min-width: 1000px) {
+.desktop-sidebar {
+transform: translateX(0);
+}
+}
+
+/* Sidebar Header */
+.sidebar-header {
+display: flex;
+align-items: center;
+font-size: 22px;
+font-weight: 600;
+color: var(--accent);
+padding: 20px 25px 30px 25px;
+border-bottom: 1px solid rgba(0,0,0,0.15);
+transition: 0.3s;
+}
+
+/* Hover: Removed neon glow */
+.sidebar-header:hover {
+color: var(--accent); /* Keep accent color */
+/* Removed text-shadow and transform */
+}
+
+/* Sidebar list */
+.desktop-sidebar ul {
+list-style: none;
+padding: 10px 0 0 0;
+}
+
+.desktop-sidebar li a {
+display: block;
+padding: 15px 25px;
+text-decoration: none;
+color: var(--text-dark);
+font-size: 17px;
+border-radius: 8px;
+margin: 6px 12px;
+transition: transform 0.2s, color 0.2s, background 0.2s;
+}
+
+/* Menu hover: UPDATED to use the softer index.css gradient */
+.desktop-sidebar li a:hover {
+background: var(--hover-gradient); /* Apply the new gradient */
+color: white; /* Change text color for better contrast on the gradient */
+transform: translateX(8px);
+box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* ==========================
+MAIN AREA
+========================== */
+.main-area {
+margin-left: var(--sidebar-width);
+width: calc(100% - var(--sidebar-width));
+}
+
+/* ==========================
+HEADER AREA
+========================== */
+header {
+display: flex;
+justify-content: space-between;
+padding: 20px 40px;
+align-items: center; 
+position: relative;
+z-index: 60;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 20px; 
+}
+
+/* Logo */
+.logo {
+font-size: 28px;
+font-weight: 600;
+color: var(--accent);
+transition: 0.3s;
+}
+
+/* Logo Hover: Removed neon glow */
+.logo:hover {
+color: var(--accent); /* Keep accent color */
+/* Removed text-shadow */
+}
+
+/* ==========================
+HAMBURGER (ANIMATED)
+========================== */
+#hamburger {
+/* HIDDEN ON DESKTOP */
+display: none; 
+width: 36px;
+height: 24px;
+flex-direction: column;
+justify-content: space-between;
+cursor: pointer;
+-webkit-tap-highlight-color: transparent;
+}
+
+#hamburger span {
+display: block;
+width: 100%;
+height: 3px;
+background: var(--text-dark);
+border-radius: 3px;
+transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+/* Hamburger into X */
+#hamburger.open span:nth-child(1) {
+transform: translateY(9px) rotate(45deg);
+}
+#hamburger.open span:nth-child(2) {
+opacity: 0;
+}
+#hamburger.open span:nth-child(3) {
+transform: translateY(-9px) rotate(-45deg);
+}
+
+/* Show hamburger only on mobile */
+@media (max-width: 999px) {
+#hamburger {
+    display: flex; /* Makes the hamburger icon visible */
+}
+
+.main-area {
+    margin-left: 0;
+    width: 100%;
+}
+
+.desktop-sidebar {
+    box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+}
+
+/* Ensure the logo and hamburger are in the correct order for mobile */
+header .logo-container {
+    order: 2; 
+}
+#hamburger {
+    order: 1; 
+}
+
+/* On mobile, shrink the logo */
+.logo {
+    font-size: 24px;
+}
+}
+
+/* Desktop media query for layout */
+@media (min-width: 1000px) {
+    .main-area {
+        margin-left: var(--sidebar-width);
+        width: calc(100% - var(--sidebar-width));
+    }
+}
+
+
+/* ==========================
+BUTTONS
+========================== */
+.btn,
+.cta-btn {
+padding: 10px 22px;
+font-size: 15px;
+border: 2px solid var(--accent);
+background: #ffffff;
+color: var(--text-dark);
+border-radius: 8px;
+cursor: pointer;
+transition: 0.18s;
+}
+
+/* Hover: UPDATED to match index.css button hover */
+.btn:hover,
+.cta-btn:hover {
+border-color: var(--accent);
+color: var(--accent);
+transform: scale(1.07);
+box-shadow: 0 0 10px rgba(94, 53, 177, 0.4);
+}
+
+/* Buttons container (Top right) */
+.menu {
+display: flex;
+gap: 12px;
+}
+
+/* ==========================
+PAGE CONTENT
+========================== */
+.content {
+text-align: center;
+/* Reduced margin top to center login form */
+margin-top: 80px; 
+padding: 0 20px;
+}
+
+
+/* ==========================
+LOGIN FORM SPECIFIC STYLES (New)
+========================== */
+.login-container {
+    max-width: 400px;
+    margin: 80px auto;
+    padding: 40px;
+    background: #ffffff; /* White background for the form box */
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    text-align: center;
+}
+
+.login-container h2 {
+    color: var(--accent);
+    margin-bottom: 25px;
+    font-size: 30px;
+}
+
+.input-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.input-group label {
+    display: block;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+.input-group input:focus {
+    border-color: var(--accent);
+    outline: none;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: var(--accent);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    /* Added to align with new button styling */
+    margin-bottom: 15px; 
+}
+
+/* Login Button Hover: UPDATED to remove neon glow and match index.css style */
+.login-btn:hover {
+    background-color: #4a289b; /* Slightly darker purple */
+    /* UPDATED box-shadow */
+    box-shadow: 0 0 10px rgba(94, 53, 177, 0.4);
+    transform: scale(1.02); /* Slight scale for visual feedback */
+}
+
+/* ==========================
+REGISTER LINK STYLES (New)
+========================== */
+.register-link-container {
+    font-size: 15px;
+    color: var(--text-dark);
+    margin-top: 20px;
+}
+
+.register-link {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s;
+}
+
+.register-link:hover {
+    color: #4a289b; /* Slightly darker accent on hover */
+    text-decoration: underline;
+}

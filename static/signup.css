@@ -1,0 +1,129 @@
+/* ==========================
+LIGHT GRADIENT THEME VARIABLES
+========================== */
+:root {
+--main-gradient: linear-gradient(135deg, #b3e5fc, #e1bee7, #ffecb3);
+--hover-gradient: linear-gradient(90deg, #d8c2ff, #a596f7);
+--text-dark: #1b1b1b;
+--accent: #5e35b1; /* Purple accent */
+}
+
+
+/* Background */
+body {
+    margin: 0;
+    font-family: Poppins, sans-serif;
+    /* UPDATED: Light gradient background */
+    background: var(--main-gradient);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    /* UPDATED: Dark text color */
+    color: var(--text-dark);
+}
+
+/* Form Container */
+.container {
+    width: 350px;
+    padding: 25px;
+    border-radius: 15px;
+    /* UPDATED: Light container style */
+    background: #ffffff; /* White background for the form box */
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15); /* Soft shadow */
+    /* UPDATED: Dark text color */
+    color: var(--text-dark);
+}
+
+/* Heading */
+.container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    /* UPDATED: Accent color, removed text-shadow */
+    color: var(--accent);
+}
+
+/* Input fields */
+.input-group {
+    margin-bottom: 18px;
+}
+
+.input-group label {
+    font-size: 14px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 4px;
+    border-radius: 8px;
+    /* UPDATED: Light theme borders and background */
+    border: 1px solid #ccc;
+    background-color: #ffffff;
+    color: var(--text-dark);
+    outline: none;
+    transition: 0.3s;
+}
+
+/* Input hover & focus */
+.input-group input:focus,
+.input-group input:hover {
+    /* UPDATED: Soft accent glow on hover/focus */
+    border-color: var(--accent);
+    box-shadow: 0 0 10px rgba(94, 53, 177, 0.4);
+}
+
+/* Button */
+.btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    /* UPDATED: Primary button style from login.css */
+    border: none;
+    background-color: var(--accent);
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    cursor: pointer;
+    color: #fff;
+    transition: 0.3s;
+    margin-bottom: 15px; /* Added for spacing with the new link */
+}
+
+/* Button Hover */
+.btn:hover {
+    /* UPDATED: Soft accent glow on hover */
+    background-color: #4a289b; /* Slightly darker purple */
+    box-shadow: 0 0 10px rgba(94, 53, 177, 0.4);
+    transform: scale(1.02);
+}
+
+/* Message text */
+#message {
+    font-size: 14px;
+    margin-bottom: 10px;
+    height: 18px;
+    text-align: center;
+}
+
+/* ==========================
+LOGIN LINK STYLES (New)
+========================== */
+.login-link-container {
+    font-size: 15px;
+    color: var(--text-dark);
+    margin-top: 20px;
+    text-align: center;
+}
+
+.login-link {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s;
+}
+
+.login-link:hover {
+    color: #4a289b; /* Slightly darker accent on hover */
+    text-decoration: underline;
+}
