@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Device Data Stream</title>
+    <link rel="stylesheet" href="static/index.css" />
+    <link rel="stylesheet" href="static/device-data-stream.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+</head>
+<body>
+
+<div class="bg"></div>
+
+<nav class="desktop-sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <div id="sidebar-closer" aria-label="Close sidebar" role="button" tabindex="0" >
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+    <ul>
+        <li><a href="index.html"><i></i> Home</a></li>   
+
+        <li><a href="dashboard.html"><i></i> Dashboard</a></li>
+        <li><a href="myaccount.html"><i></i> My Account</a></li>
+        <li><a href="myshipment.html"><i></i> My Shipments</a></li>
+        <li><a href="create-shipment.html"><i></i> New Shipment</a></li>
+        <li class="active-sidebar-link"><a href="device-data-stream.html"><i></i> Device Data</a></li>
+    </ul>
+</nav>
+
+<div class="main-area">
+    
+    <header>
+        <div class="logo-container">
+            <div id="hamburger" aria-label="Open sidebar" role="button" tabindex="0">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <h2 class="logo">Device Data Stream</h2>
+        </div>
+
+        <div class="menu">
+            <button id="loginBtn" class="btn">Login</button>
+            <button id="signupBtn" class="btn">Sign Up</button>
+        </div>
+    </header>
+
+    <main class="content" role="main">
+        <div class="data-container">
+            
+            <div class="data-stream-box">
+                <h3 style="text-align: center; margin-bottom: 20px;">Please Select a Device Id to See the Data Stream</h3>
+                <form id="dataForm" class="form-group" onsubmit="event.preventDefault();">
+                    <label for="deviceId">Device Id*</label>
+                    <select id="deviceId" name="deviceId">
+                      
+                    </select>
+                    <button type="submit" id="getDataBtn" class="cta-btn get-data-btn">GET DEVICE DATA</button>
+                </form>
+            </div>
+            
+            <div class="data-table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Device Id</th>
+                            <th>Battery Level</th>
+                            <th>First Sensor Temperature</th>
+                            <th>Route From</th>
+                            <th>Route To</th>
+                            <th>Timestamp</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dataTableBody">
+                        </tbody>
+                </table>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<script src="static/index.js"></script>
+<script src="static/device-data-stream.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,135 @@
+/* ==========================
+DEVICE DATA STREAM PAGE STYLES
+========================== */
+
+/* Utility class to highlight the current sidebar item */
+.active-sidebar-link {
+    background: var(--hover-gradient); /* Use existing hover background */
+    border-radius: 8px;
+    margin: 6px 12px;
+    transform: translateX(8px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.active-sidebar-link a {
+    /* Override standard link styling for the active state */
+    background: none !important;
+    color: white !important;
+    transform: none !important;
+}
+
+/* Container to center the main content from the screenshot */
+.data-container {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 0 20px; /* Add padding for mobile screens */
+}
+
+/* Styling for the main content box (the beige/light yellow box) */
+.data-stream-box {
+    background-color: #fff8e1; /* Light beige/yellow color */
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+/* Form elements styling */
+.form-group {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: var(--text-dark);
+    white-space: nowrap;
+}
+
+.form-group select {
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    flex-grow: 1;
+    max-width: 300px; /* Limit select box width */
+    appearance: none; /* Remove default arrow on some browsers */
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M9.293%2012.95l.707.707L15.657%208l-1.414-1.414L10%2010.828%205.757%206.586%204.343%208z%22%20fill%3D%22%235e35b1%22%2F%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px top 50%;
+    background-size: 12px auto;
+}
+
+/* Table styling */
+.data-table-container {
+    overflow-x: auto; /* Ensures table is scrollable on small screens */
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.data-table th {
+    /* Using var(--accent) for header background as seen in the screenshot */
+    background-color: var(--accent); 
+    color: white;
+    padding: 15px 10px;
+    text-align: left;
+    font-weight: 600;
+}
+
+.data-table td {
+    padding: 12px 10px;
+    border-bottom: 1px solid #eee;
+    color: var(--text-dark);
+    font-size: 14px;
+}
+
+.data-table tr:hover {
+    background-color: #f7f7f7;
+}
+
+/* Button style (using .cta-btn from index.css) */
+.get-data-btn {
+    /* Styling to match the blue button in the screenshot */
+    background-color: #4285f4; /* Google Blue */
+    color: white;
+    border-color: #4285f4;
+    font-weight: 600;
+    white-space: nowrap; /* Keep button text on one line */
+}
+
+.get-data-btn:hover {
+    /* Override index.css hover for the new button color */
+    transform: scale(1.07);
+    border-color: #4285f4;
+    color: white;
+    box-shadow: 0 0 15px rgba(66, 133, 244, 0.6);
+}
+
+/* Responsive adjustments for the form group */
+@media (max-width: 600px) {
+    .form-group {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+    .form-group label {
+        margin-bottom: -5px;
+    }
+    .form-group select, .get-data-btn {
+        max-width: 100%;
+    }
+    .data-table th, .data-table td {
+        padding: 10px 8px;
+        font-size: 12px;
+    }
+}

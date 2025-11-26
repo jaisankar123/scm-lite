@@ -1,0 +1,301 @@
+/* ==========================
+LIGHT GRADIENT THEME
+========================== */
+:root {
+--main-gradient: linear-gradient(135deg, #b3e5fc, #e1bee7, #ffecb3);
+--sidebar-gradient: linear-gradient(180deg, #ffffff, #e4dafb);
+--hover-gradient: linear-gradient(90deg, #d8c2ff, #a596f7); /* New soft gradient for hover */
+--light-bg: #f6f8ff;
+--text-dark: #1b1b1b;
+--accent: #5e35b1; /* Purple accent */
+--sidebar-width: 280px;
+}
+
+/* ==========================
+GLOBAL RESET
+========================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+  }
+
+/* ==========================
+BACKGROUND
+========================== */
+body {
+background: var(--main-gradient);
+color: var(--text-dark);
+overflow-x: hidden;
+}
+
+/* Soft Fog Visual */
+.bg {
+position: fixed;
+top: 0;
+left: 0;
+width: 120%;
+height: 120%;
+z-index: -1;
+opacity: 0.3;
+background: radial-gradient(circle at center, #ffffff66, #d0d0ff, #b4d8ff);
+}
+
+/* ==========================
+SIDEBAR (DESKTOP + MOBILE)
+========================== */
+.desktop-sidebar {
+position: fixed;
+top: 0;
+left: 0;
+width: var(--sidebar-width);
+height: 100vh;
+background: var(--sidebar-gradient);
+border-right: 2px solid rgba(0,0,0,0.1);
+padding-top: 20px;
+
+/* Start hidden for mobile, always visible for desktop */
+transform: translateX(-100%);
+transition: transform 0.38s cubic-bezier(.2,.9,.2,1);
+z-index: 50;
+}
+
+/* Sidebar open state */
+.desktop-sidebar.open {
+transform: translateX(0);
+}
+
+/* Desktop = always open (no transition) */
+@media (min-width: 1000px) {
+.desktop-sidebar {
+    transform: translateX(0);
+}
+}
+
+/* Sidebar Header (Holds the closing icon on mobile) */
+.sidebar-header {
+display: flex;
+align-items: center;
+padding: 20px 25px 30px 25px;
+border-bottom: 1px solid rgba(0,0,0,0.15);
+justify-content: flex-end; 
+}
+
+/* Closing Icon */
+#sidebar-closer {
+    width: 24px;
+    height: 18px;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+    display: flex;
+}
+#sidebar-closer span {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background: var(--text-dark);
+    border-radius: 3px;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+/* Transformation for the closer icon when the sidebar is open (turning into X) */
+.desktop-sidebar.open #sidebar-closer span:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+}
+.desktop-sidebar.open #sidebar-closer span:nth-child(2) {
+    opacity: 0;
+}
+.desktop-sidebar.open #sidebar-closer span:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+}
+
+/* Hide the closing icon on desktop */
+@media (min-width: 1000px) {
+    #sidebar-closer {
+        display: none;
+    }
+}
+
+
+/* Sidebar list */
+.desktop-sidebar ul {
+list-style: none;
+padding: 10px 0 0 0;
+}
+
+.desktop-sidebar li a {
+display: block;
+padding: 15px 25px;
+text-decoration: none;
+color: var(--text-dark);
+font-size: 17px;
+border-radius: 8px;
+margin: 6px 12px;
+transition: transform 0.2s, color 0.2s, background 0.2s;
+}
+
+/* Hover Effect: Use gradient color */
+.desktop-sidebar li a:hover {
+background: var(--hover-gradient); /* Apply the new gradient */
+color: white; /* Change text color for better contrast on the gradient */
+transform: translateX(8px);
+box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* ==========================
+MAIN AREA
+========================== */
+/* Adjust margin for desktop (sidebar is always open) */
+@media (min-width: 1000px) {
+    .main-area {
+        margin-left: var(--sidebar-width);
+        width: calc(100% - var(--sidebar-width));
+    }
+}
+/* Full width on mobile */
+@media (max-width: 999px) {
+    .main-area {
+        margin-left: 0;
+        width: 100%;
+    }
+}
+
+
+/* ==========================
+HEADER AREA
+========================== */
+header {
+display: flex;
+justify-content: space-between;
+padding: 20px 40px;
+align-items: center; /* Center items vertically */
+position: relative;
+z-index: 60;
+}
+
+/* Logo container now holds the hamburger and the logo on mobile */
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Space between hamburger and logo */
+}
+
+/* Logo */
+.logo {
+font-size: 28px;
+font-weight: 600;
+color: var(--accent);
+transition: 0.3s;
+/* Remove hover effects that used neon colors */
+}
+
+/* ==========================
+HAMBURGER (ANIMATED)
+========================== */
+#hamburger {
+/* HIDDEN BY DEFAULT (Desktop) */
+display: none; 
+width: 36px;
+height: 24px;
+flex-direction: column;
+justify-content: space-between;
+cursor: pointer;
+-webkit-tap-highlight-color: transparent;
+}
+
+#hamburger span {
+display: block;
+width: 100%;
+height: 3px;
+background: var(--text-dark);
+border-radius: 3px;
+transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+/* Hamburger into X */
+#hamburger.open span:nth-child(1) {
+transform: translateY(9px) rotate(45deg);
+}
+#hamburger.open span:nth-child(2) {
+opacity: 0;
+}
+#hamburger.open span:nth-child(3) {
+transform: translateY(-9px) rotate(-45deg);
+}
+
+/* Show hamburger only on mobile */
+@media (max-width: 999px) {
+#hamburger {
+    display: flex;
+}
+
+.desktop-sidebar {
+    box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+}
+
+/* On mobile, shrink the logo */
+.logo {
+    font-size: 24px;
+}
+
+}
+
+/* ==========================
+BUTTONS
+========================== */
+.btn,
+.cta-btn {
+padding: 10px 22px;
+font-size: 15px;
+border: 2px solid var(--accent);
+background: #ffffff;
+color: var(--text-dark);
+border-radius: 8px;
+cursor: pointer;
+transition: 0.18s;
+/* Remove neon/hover glow effects */
+}
+
+.btn:hover,
+.cta-btn:hover {
+transform: scale(1.07);
+border-color: var(--accent);
+color: var(--accent);
+box-shadow: 0 0 10px rgba(94, 53, 177, 0.4);
+}
+
+/* Buttons container (Top right) */
+.menu {
+display: flex;
+gap: 12px;
+}
+
+/* ==========================
+PAGE CONTENT
+========================== */
+.content {
+text-align: center;
+margin-top: 140px;
+padding: 0 20px;
+}
+
+.title {
+font-size: 48px;
+font-weight: bold;
+color: var(--accent);
+transition: 0.2s;
+/* Removed neon effects */
+}
+
+.description {
+width: 65%;
+margin: 16px auto 0 auto;
+font-size: 18px;
+opacity: 0.9;
+line-height: 1.6;
+transition: 0.2s;
+/* Removed neon effects */
+}
