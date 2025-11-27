@@ -32,13 +32,14 @@ document.getElementById("loginForm").addEventListener("submit", async function (
 
     if (!emailRegex.test(email)) {
         message.style.color = "red";
-        message.textContent = "⚠ Invalid email!";
+        message.textContent = "⚠️ Invalid email!";
         return;
     }
 
     if (!passRegex.test(pass)) {
+        // This is the client-side strength check
         message.style.color = "red";
-        message.textContent = "⚠ Weak password! Must contain: min 6 chars, upper, lower, digit, special char.";
+        message.textContent = "⚠️ Weak password! Must contain: min 6 chars, upper, lower, digit, special char.";
         return;
     }
 
@@ -53,18 +54,27 @@ document.getElementById("loginForm").addEventListener("submit", async function (
         const result = await response.json();
 
         if (!response.ok) {
+            // This section handles the backend failure (401 error with "Invalid password")
             message.style.color = "red";
-            message.textContent = `⚠ ${result.detail || 'Login failed.'}`;
+            message.textContent = `⚠️ ${result.detail || 'Login failed.'}`;
             return;
         }
 
-        // ⭐ UPDATED LOGIC: Store user data upon successful login
+        // ⭐ Success Logic: Store JWT token and user data 
+        if (result.access_token) {
+            sessionStorage.setItem('accessToken', result.access_token);
+        } else {
+             message.style.color = "red";
+             message.textContent = "⚠️ Login failed: Token missing.";
+             return;
+        }
+
+
         if (result.user_data && result.user_data.name && result.user_data.email) {
-             // Store the name and email for use on protected pages (auth-guard, myaccount)
+             // Store the name and email for display on protected pages
             sessionStorage.setItem('userName', result.user_data.name);
             sessionStorage.setItem('userEmail', result.user_data.email); 
         } else {
-             // Fallback if backend doesn't provide name/email (shouldn't happen with updated main.py)
              sessionStorage.setItem('userName', email.split('@')[0]);
              sessionStorage.setItem('userEmail', email);
         }
@@ -74,12 +84,12 @@ document.getElementById("loginForm").addEventListener("submit", async function (
 
         alert("Logged in successfully!");
 
-        // Redirect to the protected account page
-        window.location.href = "myaccount.html"; 
+        // Redirect to the protected account page using the FastAPI route
+        window.location.href = "/myaccount"; 
 
     } catch (error) {
         console.error("Fetch error during login:", error);
         message.style.color = "red";
-        message.textContent = "⚠ Server error! Check if FastAPI server is running at http://127.0.0.1:8000.";
+        message.textContent = "⚠️ Server error! Check if FastAPI server is running at http://127.0.0.1:8000.";
     }
 });

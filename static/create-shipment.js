@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return isValid;
     }
 
-    // --- NEW: Function to Fetch Routes and Devices ---
+    // --- Function to Fetch Routes and Devices ---
     async function populateFormOptions() {
         try {
             // NOTE: Assuming route options are static for now, only fetching devices
@@ -50,12 +50,21 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // --- API Submission Logic ---
+    // --- API Submission Logic (WITH JWT INTEGRATION) ---
     createShipmentBtn.addEventListener('click', async function(event) {
         event.preventDefault();
 
         if (validateForm(shipmentForm)) {
             
+            // 1. Retrieve the JWT from session storage
+            const token = sessionStorage.getItem('accessToken');
+            if (!token) {
+                alert('Authentication required. Please log in first.');
+                // Redirect user to login page if token is missing
+                window.location.href = '/login'; 
+                return;
+            }
+
             // Collect ALL necessary data based on HTML structure
             const shipmentData = {
                 shipmentNumber: getInputValue('input[placeholder="Shipment Number"]'),
@@ -77,7 +86,11 @@ document.addEventListener('DOMContentLoaded', function() {
             try {
                 const response = await fetch('http://127.0.0.1:8000/shipment/new', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        // 2. Add Authorization header with Bearer token
+                        'Authorization': `Bearer ${token}` 
+                    },
                     body: JSON.stringify(shipmentData)
                 });
 
@@ -86,8 +99,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (response.ok) {
                     alert(`Shipment ${result.shipment_id} created successfully!`);
                     shipmentForm.reset();
+                } else if (response.status === 401 || response.status === 403) {
+                    // Handle unauthorized or forbidden access
+                    alert(`Authentication failed: ${result.detail}. Please log in again.`);
+                    sessionStorage.removeItem('accessToken'); // Clear invalid token
+                    window.location.href = '/login';
                 } else {
-                    alert(`Creation Failed: ${result.detail}`);
+                    alert(`Creation Failed: ${result.detail || 'Server error.'}`);
                 }
             } catch (error) {
                 console.error('API Error:', error);
@@ -100,7 +118,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // =================================
-    // 2. CLEAR DETAILS FUNCTIONALITY (UNCHANGED)
+    // 2. CLEAR DETAILS FUNCTIONALITY
     // =================================
     
     clearDetailsBtn.addEventListener('click', function(event) {
@@ -113,5 +131,5 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Initialize form options on load
-    document.addEventListener('DOMContentLoaded', populateFormOptions);
-}); 
+    populateFormOptions();
+});

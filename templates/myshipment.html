@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Shipments</title>
+    <link rel="stylesheet" href="static/index.css"> 
+    <link rel="stylesheet" href="static/myshipment.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+
+</head>
+
+<body>
+
+    <div class="bg"></div>
+
+    <nav class="desktop-sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2 class="logo" style="color: var(--accent); font-size: 1.5em; font-weight: 700;">EXF</h2> 
+            <div id="sidebar-closer" aria-label="Close sidebar" role="button" tabindex="0">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        <ul>
+            <li><a href="/"><i></i> Home</a></li>   
+            <li><a href="/dashboard"><i></i> Dashboard</a></li>
+            <li><a href="/myaccount"><i></i> My Account</a></li>
+            <li><a href="/myshipment" style="background: var(--hover-gradient); color: white;"><i></i> My Shipments</a></li>
+            <li><a href="/create-shipment"><i></i> New Shipment</a></li> 
+            <li><a href="/device-data-stream"><i></i> Device Data</a></li>
+        </ul>
+    </nav>
+
+    <div class="main-area">
+        
+        <header>
+            <div class="logo-container">
+                <div id="hamburger" aria-label="Open sidebar" role="button" tabindex="0">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <h2 class="logo">My Shipments</h2>
+            </div>
+            <div class="menu">
+                <div class="user-initial" id="headerUserInitial" style="width: 35px; height: 35px; font-size: 16px;">U</div>
+            </div>
+        </header>
+
+        <main class="content" role="main">
+            <div class="shipments-container">
+                
+                <div class="user-details">
+                    <div class="user-initial" id="mainUserInitial">U</div>
+                    <div>
+                        <h3 id="displayName">Loading...</h3>
+                        <p id="displayEmail">Loading...</p>
+                    </div>
+                </div>
+
+                <h2>My Shipment History</h2>
+
+                <div class="table-responsive">
+                    <table class="shipments-table" id="shipmentsTable">
+                        <thead>
+                            <tr>
+                                <th>Shipment ID</th>
+                                <th>Container No.</th>
+                                <th>Goods Type</th>
+                                <th>Route</th>
+                                <th>Delivery Date</th>
+                                <th>Status</th>
+                                <th>Created On</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody id="shipmentsTableBody">
+                            </tbody>
+                    </table>
+                    <p id="noDataMessage" class="no-data" style="display: none;">Loading shipments...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="ststic/index.js"></script> 
+    <script src="static/myshipment.js"></script>    
+    
+</body>
+</html>

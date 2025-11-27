@@ -1,0 +1,92 @@
+        /* Specific Styles for My Shipments Page */
+        
+        .shipments-container {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            max-width: 1200px;
+            margin: 40px auto;
+            text-align: left;
+        }
+
+        .user-details {
+            border-bottom: 2px solid #eee;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+        }
+
+        .user-initial {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background-color: var(--accent); /* Purple accent */
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .user-details h3 {
+            margin: 0;
+            color: var(--text-dark);
+            font-size: 1.4em;
+        }
+        .user-details p {
+            margin: 5px 0 0 0;
+            color: #555;
+            font-size: 0.9em;
+        }
+
+        /* Scrollable Table Container */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto; /* Enables horizontal scrolling */
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .shipments-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px; /* Ensure table is wider than container to force scroll */
+        }
+
+        .shipments-table th, .shipments-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            white-space: nowrap; /* Keep content on a single line */
+        }
+
+        .shipments-table th {
+            background-color: var(--accent);
+            color: white;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .shipments-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .shipments-table tr:hover {
+            background-color: #f0e6ff; /* Light hover highlight */
+        }
+
+        .status-created { color: #5e35b1; font-weight: 600; }
+        .status-transit { color: #f57f17; font-weight: 600; }
+        .status-delivered { color: #388e3c; font-weight: 600; }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+            font-style: italic;
+        }

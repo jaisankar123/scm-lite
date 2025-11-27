@@ -1,0 +1,73 @@
+        /* Basic styling for myaccount components (you'll want to move this to a proper CSS file) */
+        .profile-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .user-initial {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #00bcd4; /* Neon blue color */
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 28px;
+            font-weight: bold;
+            margin-right: 20px;
+        }
+        .user-info h3 {
+            margin: 0;
+            color: #00bcd4;
+        }
+        .user-info p {
+            margin: 5px 0 0 0;
+            color: #ccc;
+        }
+        .details-container {
+            padding: 20px;
+            border: 1px solid #00bcd4;
+            border-radius: 8px;
+            background-color: #1a1a1a;
+        }
+        .help-section {
+            margin-top: 30px;
+        }
+        #messageForm {
+            display: none; /* Hidden by default */
+            margin-top: 15px;
+            padding: 15px;
+            border: 1px solid #7af58b;
+            border-radius: 5px;
+            background-color: #0f0f0f;
+        }
+        #messageForm textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #444;
+            background-color: #222;
+            color: white;
+            box-sizing: border-box;
+            resize: vertical;
+        }
+        #messageForm button {
+            background-color: #7af58b;
+            color: black;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+
+        }
+        .active-sidebar-link {
+        
+            background: var(--hover-gradient); /* Use existing hover background */
+            border-radius: 8px;
+            margin: 6px 12px;
+            transform: translateX(8px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);}
+
+        
