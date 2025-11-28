@@ -1,12 +1,26 @@
-    // ... (Sidebar logic remains the same)
+// ======================
+// LOGIN / SIGNUP BUTTONS
+// ======================
 
-    // ======================
-    // LOGIN / SIGNUP BUTTONS
-    // ======================
-    document.getElementById("loginBtn").addEventListener("click", () => {
+const loginBtn = document.getElementById("loginBtn");
+const signupBtn = document.getElementById("signupBtn");
+const token = localStorage.getItem("access_token");
+
+// Add event listeners only if buttons exist
+if (loginBtn) {
+    loginBtn.addEventListener("click", () => {
         window.location.href = "/login";
     });
+}
 
-    document.getElementById("signupBtn").addEventListener("click", () => {
+if (signupBtn) {
+    signupBtn.addEventListener("click", () => {
         window.location.href = "/signup";
     });
+}
+
+// Hide login & signup when user IS logged in
+if (token) {
+    if (loginBtn) loginBtn.style.display = "none";
+    if (signupBtn) signupBtn.style.display = "none";
+}

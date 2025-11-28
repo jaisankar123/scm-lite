@@ -159,6 +159,12 @@ def get_latest_device_data(user=Depends(get_current_user)):
 
 
 # ------------------ AUTH ROUTES ------------------
+
+@app.get("/api/v1/verify-token")
+def verify_token(current_user: dict = Depends(get_current_user)):
+    return {"status": "valid"}
+
+
 @app.post("/signup")
 def signup_user(user: SignupModel):
     existing_user = users_collection.find_one({"email": user.email})
