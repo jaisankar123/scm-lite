@@ -1,71 +1,104 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
+
+    // ============================================
+    // GLOBAL JWT VALIDATION FOR PAGE ACCESS
+    // ============================================
+    const token = sessionStorage.getItem('accessToken');
+    if (!token) {
+        alert("Unauthorized access. Please log in.");
+        window.location.href = "/login";
+        return;
+    }
+
     const shipmentForm = document.getElementById('shipmentForm');
-    // Select the button elements using their specific classes
     const createShipmentBtn = document.querySelector('.create-btn-style');
     const clearDetailsBtn = document.querySelector('.clear-btn-style');
-    
-    // =================================
-    // 1. VALIDATION AND SUBMISSION
-    // =================================
-    
-    // Helper function to query inputs by their placeholder or index/selector
+
+
+    // ============================================
+    // 1. VALIDATION AND FORM HELPERS
+    // ============================================
+
     function getInputValue(selector) {
         const element = shipmentForm.querySelector(selector);
-        return element ? element.value.trim() : '';
+        return element ? element.value.trim() : "";
     }
 
     function validateForm(form) {
         let isValid = true;
-        const requiredInputs = form.querySelectorAll('input[required], select');
+        const required = form.querySelectorAll("input[required], select");
 
-        requiredInputs.forEach(input => {
-            if (input.value.trim() === '' || 
-                (input.tagName === 'SELECT' && input.value.includes('Select'))) 
-            {
+        required.forEach(input => {
+            if (
+                input.value.trim() === "" ||
+                (input.tagName === "SELECT" && input.value.includes("Select"))
+            ) {
                 isValid = false;
-                input.classList.add('is-invalid'); 
+                input.classList.add("is-invalid");
             } else {
-                input.classList.remove('is-invalid');
+                input.classList.remove("is-invalid");
             }
         });
+
         return isValid;
     }
 
-    // --- Function to Fetch Routes and Devices ---
+
+    // ============================================
+    // 2. FETCH DEVICES (WITH JWT)
+    // ============================================
+
     async function populateFormOptions() {
         try {
-            // NOTE: Assuming route options are static for now, only fetching devices
-            const deviceResponse = await fetch('http://127.0.0.1:8000/devices/all');
-            const deviceIds = await deviceResponse.json();
-            
-            const deviceSelect = shipmentForm.querySelector('select:nth-of-type(2)');
-            let optionsHtml = '<option value="">Select Device</option>';
-            deviceIds.forEach(id => {
-                optionsHtml += `<option value="${id}">${id}</option>`;
+
+            const res = await fetch("http://127.0.0.1:8000/devices/all", {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
             });
-            deviceSelect.innerHTML = optionsHtml;
-            
-        } catch (error) {
-            console.error('Failed to populate device IDs:', error);
-        }
-    }
 
-    // --- API Submission Logic (WITH JWT INTEGRATION) ---
-    createShipmentBtn.addEventListener('click', async function(event) {
-        event.preventDefault();
-
-        if (validateForm(shipmentForm)) {
-            
-            // 1. Retrieve the JWT from session storage
-            const token = sessionStorage.getItem('accessToken');
-            if (!token) {
-                alert('Authentication required. Please log in first.');
-                // Redirect user to login page if token is missing
-                window.location.href = '/login'; 
+            if (res.status === 401 || res.status === 403) {
+                sessionStorage.clear();
+                alert("Session expired. Please login again.");
+                window.location.href = "/login";
                 return;
             }
 
-            // Collect ALL necessary data based on HTML structure
+            const deviceIds = await res.json();
+            const deviceSelect = shipmentForm.querySelector("select:nth-of-type(2)");
+
+            let html = `<option value="">Select Device</option>`;
+            deviceIds.forEach(id => html += `<option value="${id}">${id}</option>`);
+
+            deviceSelect.innerHTML = html;
+
+        } catch (err) {
+            console.error("Error loading devices:", err);
+        }
+    }
+
+
+    // ============================================
+    // 3. CREATE SHIPMENT (WITH JWT)
+    // ============================================
+
+    if (createShipmentBtn) {
+        createShipmentBtn.addEventListener("click", async (e) => {
+            e.preventDefault();
+
+            if (!validateForm(shipmentForm)) {
+                alert("Please fill out all required fields.");
+                return;
+            }
+
+            const token = sessionStorage.getItem("accessToken");
+            if (!token) {
+                alert("Authentication failed. Login again.");
+                window.location.href = "/login";
+                return;
+            }
+
             const shipmentData = {
                 shipmentNumber: getInputValue('input[placeholder="Shipment Number"]'),
                 route: getInputValue('select:nth-of-type(1)'),
@@ -79,57 +112,60 @@ document.addEventListener('DOMContentLoaded', function() {
                 serialNumber: getInputValue('input[placeholder="Serial number of Goods"]'),
                 deliveryNumber: getInputValue('input[placeholder="Delivery Number"]'),
                 batchId: getInputValue('input[placeholder="Batch Id"]'),
-                status: 'Created', // Default status
+                status: "Created",
                 created: new Date().toLocaleDateString()
             };
 
             try {
-                const response = await fetch('http://127.0.0.1:8000/shipment/new', {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        // 2. Add Authorization header with Bearer token
-                        'Authorization': `Bearer ${token}` 
+                const res = await fetch("http://127.0.0.1:8000/shipment/new", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
                     },
                     body: JSON.stringify(shipmentData)
                 });
 
-                const result = await response.json();
+                const output = await res.json();
 
-                if (response.ok) {
-                    alert(`Shipment ${result.shipment_id} created successfully!`);
-                    shipmentForm.reset();
-                } else if (response.status === 401 || response.status === 403) {
-                    // Handle unauthorized or forbidden access
-                    alert(`Authentication failed: ${result.detail}. Please log in again.`);
-                    sessionStorage.removeItem('accessToken'); // Clear invalid token
-                    window.location.href = '/login';
-                } else {
-                    alert(`Creation Failed: ${result.detail || 'Server error.'}`);
+                if (res.status === 401 || res.status === 403) {
+                    alert("Session expired. Please log in again.");
+                    sessionStorage.clear();
+                    window.location.href = "/login";
+                    return;
                 }
-            } catch (error) {
-                console.error('API Error:', error);
-                alert('Server error: Could not create shipment.');
+
+                if (!res.ok) {
+                    alert("Failed to create shipment: " + (output.detail || "Server error"));
+                    return;
+                }
+
+                alert(`Shipment ${output.shipment_id} created successfully!`);
+                shipmentForm.reset();
+
+            } catch (err) {
+                console.error("API Error:", err);
+                alert("Server error. Try again later.");
             }
-
-        } else {
-            alert('Please fill out all required details before creating the shipment.');
-        }
-    });
-
-    // =================================
-    // 2. CLEAR DETAILS FUNCTIONALITY
-    // =================================
-    
-    clearDetailsBtn.addEventListener('click', function(event) {
-        event.preventDefault(); 
-        shipmentForm.reset();
-        shipmentForm.querySelectorAll('.is-invalid').forEach(input => {
-            input.classList.remove('is-invalid');
         });
-        alert('Form details cleared.');
-    });
+    }
 
-    // Initialize form options on load
+
+    // ============================================
+    // 4. CLEAR FORM BUTTON
+    // ============================================
+
+    if (clearDetailsBtn) {
+        clearDetailsBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            shipmentForm.reset();
+            shipmentForm.querySelectorAll(".is-invalid").forEach(el => {
+                el.classList.remove("is-invalid");
+            });
+            alert("Form cleared!");
+        });
+    }
+
     populateFormOptions();
 });
+

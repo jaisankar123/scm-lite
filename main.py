@@ -3,30 +3,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse 
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi.security import OAuth2PasswordBearer
 from models import SignupModel, LoginModel, ShipmentModel
 from pymongo import MongoClient 
 from database import users_collection
-from auth import hash_password, verify_password, create_access_token, decode_access_token
+from auth import hash_password, verify_password, create_access_token, decode_access_token, get_current_user
 from datetime import timedelta
 import time
 from typing import List
 
-# --- JWT Dependencies Setup ---
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
-def get_current_user(token: str = Depends(oauth2_scheme)):
-    """Dependency to decode and validate JWT token."""
-    payload = decode_access_token(token)
-    if payload is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    return payload # Returns {"email": user_email}
-
-# ------------------------------
 
 app = FastAPI()
 
@@ -112,6 +97,23 @@ def create_new_shipment(shipment: ShipmentModel, user_payload: dict = Depends(ge
         raise HTTPException(status_code=500, detail=f"Database error during shipment creation: {e}")
 # -----------------------------------------------------------
 
+@app.get("/shipment/my")
+def get_my_shipments(user_payload: dict = Depends(get_current_user)):
+    """Fetch shipments created by the logged-in user."""
+    try:
+        collection = get_scm_data_collection("shipments_collection")
+
+        shipments = list(collection.find(
+            {"creator_email": user_payload["email"]}
+        ))
+
+        for s in shipments:
+            s["_id"] = str(s["_id"])
+
+        return shipments
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 # ------------------ 3. GET ACCOUNT DETAILS ------------------
 @app.get("/account/me/{email}")
@@ -134,7 +136,7 @@ def get_user_details(email: str, user_payload: dict = Depends(get_current_user))
 
 # ------------------ GET LATEST SCM DATA (POLLING) ------------------
 @app.get("/device-data")
-def get_latest_device_data():
+def get_latest_device_data(user=Depends(get_current_user)):
     """Fetches the latest 15 documents from the live device data collection."""
     try:
         collection = get_scm_data_collection("shipment_data")
