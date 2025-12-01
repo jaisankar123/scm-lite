@@ -1,35 +1,109 @@
+# Define a custom network for all services
+networks:
+  scmlite-net:
+    driver: bridge
+
 services:
+  # ------------------------------------
+  # 1. ZOOKEEPER SERVICE (External Image)
+  # ------------------------------------
   zookeeper:
     image: confluentinc/cp-zookeeper:7.0.1
     container_name: zookeeper
-    hostname: zookeeper
     ports:
       - "2181:2181"
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     networks:
-      - scm-network
+      - scmlite-net
 
+  # ----------------------------------
+  # 2. KAFKA SERVICE (External Image)
+  # ----------------------------------
   kafka:
     image: confluentinc/cp-kafka:7.0.1
     container_name: kafka
-    hostname: kafka
-    depends_on:
-      - zookeeper
     ports:
       - "9092:9092"
-      - "9093:9093"
     environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      # IMPORTANT: Use the service name 'kafka' for internal communication
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    depends_on:
+      - zookeeper
     networks:
-      - scm-network
+      - scmlite-net
 
-networks:
-  scm-network:
-    driver: bridge
+  # ------------------------------------
+  # 3. WEB APPLICATION (FastAPI/Uvicorn)
+  # ------------------------------------
+  web-app:
+    build: . # Build using the Dockerfile in the current directory
+    container_name: scm-web-app
+    entrypoint: python
+    command: ["-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+    ports:
+      - "8000:8000" # Map container port 8000 to host port 8000
+    depends_on:
+      - consumer
+    environment:
+      # Use service names as hostnames for internal connections
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092 
+      MONGODB_URI: ${MONGODB_URI}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+    networks:
+      - scmlite-net
+
+  # ------------------------------------
+  # 4. DATA SERVER (Socket Generator)
+  # ------------------------------------
+  data-server:
+    build: .
+    container_name: scm-data-server
+    command: ["server.py"] # Run your server script
+    # Expose the socket port (5050) for the producer to connect to
+    ports:
+      - "5050:5050"
+    networks:
+      - scmlite-net
+
+  # ------------------------------------
+  # 5. DATA PRODUCER (Connects to Server & Kafka)
+  # ------------------------------------
+  producer:
+    build: .
+    container_name: scm-producer
+    command: ["producer.py"] # Run your producer script
+    depends_on:
+      - kafka
+      - data-server # Ensure the socket server is running first
+    environment:
+      # Removed local hostnames to force scripts to read env vars or use service names
+      KAFKA_TOPIC: device_stream_data
+      # Set KAFKA_BOOTSTRAP_SERVERS to the correct service name
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      # Set SOCKET_SERVER to the correct service name
+      SOCKET_SERVER: data-server 
+      SOCKET_PORT: 5050
+      BUFFER_SIZE: 4096
+    networks:
+      - scmlite-net
+
+  # ------------------------------------
+  # 6. DATA CONSUMER (Connects to Kafka & MongoDB)
+  # ------------------------------------
+  consumer:
+    build: .
+    container_name: scm-consumer
+    command: ["consumer.py"] # Assuming you have a consumer.py script
+    depends_on:
+      - kafka
+    environment:
+      # Use the Kafka service name
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      MONGODB_URI: ${MONGODB_URI}
+    networks:
+      - scmlite-net

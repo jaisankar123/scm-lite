@@ -7,7 +7,7 @@ import random
 
 PORT = 5050
 # Uses the system's hostname, often resolves to 127.0.0.1 or the network IP
-SERVER = '127.0.0.1' 
+SERVER = '0.0.0.0' 
 print(SERVER)
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'

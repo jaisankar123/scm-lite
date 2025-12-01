@@ -4,6 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.gzip import GZipMiddleware
 from models import SignupModel, LoginModel, ShipmentModel, DeviceListModel
+from fastapi.middleware.cors import CORSMiddleware
 
 from database import db, USERS_COLLECTION, DEVICE_STREAM_DATA_COLLECTION
 import logging
@@ -29,6 +30,21 @@ app = FastAPI()
 
 # Add GZip compression
 app.add_middleware(GZipMiddleware, minimum_size=1000)
+origins = [
+    # Allow all origins for development (less secure)
+    "*" 
+    # For production, you would list specific origins:
+    # "http://localhost:8000",
+    # "http://127.0.0.1:8000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all standard HTTP methods
+    allow_headers=["*"],  # Allow all headers, including custom ones like 'Authorization'
+)
 
 # Initialize Jinja2Templates
 templates = Jinja2Templates(directory="templates") 

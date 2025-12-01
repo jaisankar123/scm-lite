@@ -3,6 +3,8 @@ import json
 from kafka import KafkaProducer
 import logging
 import time
+import os
+from kafka.errors import NoBrokersAvailable
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -12,26 +14,41 @@ logger = logging.getLogger(__name__)
 
 # Configuration
 # **FIXED**: Changed to 127.0.0.1 for local testing
-SOCKET_SERVER = '127.0.0.1' 
-SOCKET_PORT = 5050
-KAFKA_BOOTSTRAP_SERVERS = ['localhost:9092']
-KAFKA_TOPIC = 'device_stream_data'
-BUFFER_SIZE = 4096
+SOCKET_SERVER = os.environ.get('SOCKET_SERVER', '127.0.0.1') 
+SOCKET_PORT = int(os.environ.get('SOCKET_PORT', 5050))
 
-def create_kafka_producer():
-    """Create and return a Kafka producer instance."""
-    try:
-        producer = KafkaProducer(
-            bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
-            value_serializer=lambda v: json.dumps(v).encode('utf-8'),
-            acks='all',
-            retries=3
-        )
-        logger.info("Successfully connected to Kafka")
-        return producer
-    except Exception as e:
-        logger.error(f"Failed to create Kafka producer: {e}")
-        raise
+# CHANGE: Read KAFKA_BOOTSTRAP_SERVERS from environment, splitting the string
+KAFKA_BOOTSTRAP_SERVERS = os.environ.get('KAFKA_BOOTSTRAP_SERVERS', 'localhost:9092').split(',')
+
+KAFKA_TOPIC = os.environ.get('KAFKA_TOPIC', 'device_stream_data')
+BUFFER_SIZE = int(os.environ.get('BUFFER_SIZE', 4096))
+
+def create_kafka_producer(max_retries=10, retry_interval_seconds=5):
+    """Create and return a Kafka producer instance with retry logic."""
+    attempt = 0
+    while attempt < max_retries:
+        try:
+            producer = KafkaProducer(
+                bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
+                value_serializer=lambda v: json.dumps(v).encode('utf-8'),
+                acks='all',
+                retries=3
+            )
+            logger.info("Successfully connected to Kafka")
+            return producer
+        except NoBrokersAvailable as e:
+            attempt += 1
+            if attempt < max_retries:
+                logger.warning(
+                    f"Kafka broker not available (Attempt {attempt}/{max_retries}). Retrying in {retry_interval_seconds} seconds..."
+                )
+                time.sleep(retry_interval_seconds)
+            else:
+                logger.error(f"Failed to create Kafka producer after {max_retries} attempts: {e}")
+                raise # Re-raise the exception after exhausting retries
+        except Exception as e:
+            logger.error(f"Failed to create Kafka producer due to unexpected error: {e}")
+            raise
 
 def connect_to_socket_server(host, port):
     """Connect to the socket server and return the socket object."""

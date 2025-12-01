@@ -7,6 +7,7 @@ from kafka.errors import KafkaError, NoBrokersAvailable
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure, PyMongoError
 from time import sleep
+import os
 
 
 
@@ -22,10 +23,13 @@ logging.basicConfig(
 log_processor = logging.getLogger(__name__)
 
 # Configuration Constants
-KAFKA_SERVER_ADDRESSES = ['localhost:9092']
+KAFKA_SERVER_ADDRESSES = os.environ.get('KAFKA_BOOTSTRAP_SERVERS', 'localhost:9092').split(',')
+
 KAFKA_INPUT_TOPIC = 'device_stream_data'
 
-MONGO_CONNECTION_URI = 'mongodb+srv://jaisankarnb66:jaisankarnoob@scmjai.hhh5gt5.mongodb.net/?appName=scmjai'
+# CHANGE: Read MONGO_CONNECTION_URI from environment
+MONGO_CONNECTION_URI = os.environ.get('MONGODB_URI', 'mongodb+srv://jaisankarnb66:jaisankarnoob@scmjai.hhh5gt5.mongodb.net/?appName=scmjai')
+
 MONGODB_DATABASE_NAME = 'scmlitedb'
 MONGODB_COLLECTION_NAME = 'device_stream_data'
 
