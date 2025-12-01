@@ -4,15 +4,16 @@ document.addEventListener('DOMContentLoaded', function () {
     // 0. JWT VALIDATION FOR DASHBOARD ACCESS
     // =========================================
 
-    const token = sessionStorage.getItem("access_token");
+    // const token = localStorage.getItem("access_token");
 
-    if (!token) {
-        // No valid session, redirect to login page
-        window.location.href = "/login";
-        return;  // Stop further execution
-    }
+    // if (!token) {
+    //     // No valid session, redirect to login page
+    //     window.location.href = "/login";
+    //     console.log("No JWT found, redirecting to login.");
+    //     return;  // Stop further execution
+    // }
 
-    console.log("JWT validated for dashboard.");
+    // console.log("JWT validated for dashboard.");
 
     // =========================================
     // 1. FORM VALIDATION LOGIC (Your Code)

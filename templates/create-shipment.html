@@ -15,7 +15,6 @@
 
     <nav class="desktop-sidebar" id="sidebar">
         <div class="sidebar-header">
-            <h2 class="logo" style="color: var(--accent); font-size: 1.5em; font-weight: 700;">EXF</h2> 
             <div id="sidebar-closer" aria-label="Close sidebar" role="button" tabindex="0">
                 <span></span>
                 <span></span>
@@ -59,12 +58,12 @@
                         
                         <div class="form-column">
                             <div class="input-group">
-                                <label>Shipment Number</label>
-                                <input type="text" placeholder="Shipment Number" required = True>
+                                <label for="shipmentNumber">Shipment Number</label>
+                                <input type="text" id="shipmentNumber" placeholder="Shipment Number" required = True>
                             </div>
                             <div class="input-group">
-                                <label>Route Details</label>
-                                <select>
+                                <label for="route">Route Details</label>
+                                <select id="route">
                                     <option>New York,USA</option>
                                     <option>Chennai, India</option>
                                     <option>Bengaluru, USA</option>
@@ -73,51 +72,64 @@
                                 </select>
                             </div>
                             <div class="input-group">
-                                <label>Device*</label>
-                                <select>
-                                    <option>Select Device</option>
+                                <label for="device">Device</label>
+                                <select id="device">
+                                    <option>1150</option>
+                                    <option>1151</option>
+                                    <option>1152</option>
+                                    <option>1153</option>
+                                    <option>1154</option>
+                                    <option>1155</option>
+                                    <option>1156</option>
+                                    <option>1157</option>
+                                    <option>1158</option>
+                                    <option>1159</option>
+
                                 </select>
                             </div>
                             <div class="input-group">
-                                <label>PO Number*</label>
-                                <input type="text" placeholder="PO Number">
+                                <label for="poNumber">PO Number</label>
+                                <input type="text" id="poNumber" placeholder="PO Number" required = True>
                             </div>
                             <div class="input-group">
-                                <label>NDC Number*</label>
-                                <input type="text" placeholder="NDC Number">
+                                <label for="ndcNumber">NDC Number</label>
+                                <input type="text" id="ndcNumber" placeholder="NDC Number" required = True>
                             </div>
                             <div class="input-group">
-                                <label>Serial number of Goods*</label>
-                                <input type="text" placeholder="Serial number of Goods">
+                                <label for="serialNumber">Serial number of Goods</label>
+                                <input type="text" id="serialNumber" placeholder="Serial number of Goods" required = True>
                             </div>
                         </div>
 
                         <div class="form-column">
                             <div class="input-group">
-                                <label>Container Number*</label>
-                                <input type="text" placeholder="Container Number">
+                                <label for="containerNumber">Container Number</label>
+                                <input type="text" id="containerNumber" placeholder="Container Number" required = True>
                             </div>
                             <div class="input-group">
-                                <label>Goods Type*</label>
-                                <select>
-                                    <option>Select Goods</option>
+                                <label for="goodsType">Goods Type</label>
+                                <select id="goodsType">
+                                    <option>Furniture</option>
+                                    <option>Kitchen Utensils</option>
+                                    <option>Electronic Devices</option>
+                                    <option>Electric Appliances</option>
                                 </select>
                             </div>
                             <div class="input-group">
-                                <label>Expected Delivery Date*</label>
-                                <input type="date" value="2000-01-20"> 
+                                <label for="deliveryDate">Expected Delivery Date</label>
+                                <input type="date" id="deliveryDate" value="2024-01-20" required = True> 
                             </div>
                             <div class="input-group">
-                                <label>Delivery Number*</label>
-                                <input type="text" placeholder="Delivery Number">
+                                <label for="deliveryNumber">Delivery Number</label>
+                                <input type="text" id="deliveryNumber" placeholder="Delivery Number" required = True>
                             </div>
                             <div class="input-group">
-                                <label>Batch Id*</label>
-                                <input type="text" placeholder="Batch Id">
+                                <label for="batchId">Batch Id</label>
+                                <input type="text" id="batchId" placeholder="Batch Id" required = True>
                             </div>
                             <div class="input-group">
-                                <label>Shipment Description*</label>
-                                <input type="text" placeholder="Shipment Description">
+                                <label for="description">Shipment Description</label>
+                                <input type="text" id="description" placeholder="Shipment Description" required = True>
                             </div>
                         </div>
                     </div>
@@ -138,7 +150,7 @@
 
     <!-- <script src="static/index.js"></script> -->
     <script src="static/create-shipment.js"></script>
-    <script src="/static/auth-check.js"></script>
+    <script src="static/auth-check.js"></script>
 
 
 </body>

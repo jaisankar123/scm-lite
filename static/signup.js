@@ -60,7 +60,7 @@ document.getElementById("signupForm").addEventListener("submit", async function 
         message.style.color = "#7af58b";
         message.textContent = "✔ Signup successful! Redirecting to login...";
         alert("Signup successful! You can now log in.");
-        window.location.href = "login.html";
+        window.location.href = "/login";
 
     } catch (error) {
         console.error(error);

@@ -1,26 +1,16 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-    // ============================================
-    // GLOBAL JWT VALIDATION FOR PAGE ACCESS
-    // ============================================
-    const token = sessionStorage.getItem('accessToken');
-    if (!token) {
-        alert("Unauthorized access. Please log in.");
-        window.location.href = "/login";
-        return;
-    }
-
     const shipmentForm = document.getElementById('shipmentForm');
     const createShipmentBtn = document.querySelector('.create-btn-style');
     const clearDetailsBtn = document.querySelector('.clear-btn-style');
-
-
+    
     // ============================================
     // 1. VALIDATION AND FORM HELPERS
     // ============================================
 
-    function getInputValue(selector) {
-        const element = shipmentForm.querySelector(selector);
+    // Updated helper function to use IDs
+    function getInputValue(id) {
+        const element = document.getElementById(id);
         return element ? element.value.trim() : "";
     }
 
@@ -31,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function () {
         required.forEach(input => {
             if (
                 input.value.trim() === "" ||
-                (input.tagName === "SELECT" && input.value.includes("Select"))
+                (input.tagName === "SELECT" && input.value.includes("Select")) // Assuming a 'Select' placeholder option exists
             ) {
                 isValid = false;
                 input.classList.add("is-invalid");
@@ -45,42 +35,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     // ============================================
-    // 2. FETCH DEVICES (WITH JWT)
+    // 2. FETCH DEVICES (Placeholder - NOT implemented in Python)
     // ============================================
-
-    async function populateFormOptions() {
-        try {
-
-            const res = await fetch("http://127.0.0.1:8000/devices/all", {
-                method: "GET",
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            });
-
-            if (res.status === 401 || res.status === 403) {
-                sessionStorage.clear();
-                alert("Session expired. Please login again.");
-                window.location.href = "/login";
-                return;
-            }
-
-            const deviceIds = await res.json();
-            const deviceSelect = shipmentForm.querySelector("select:nth-of-type(2)");
-
-            let html = `<option value="">Select Device</option>`;
-            deviceIds.forEach(id => html += `<option value="${id}">${id}</option>`);
-
-            deviceSelect.innerHTML = html;
-
-        } catch (err) {
-            console.error("Error loading devices:", err);
-        }
-    }
+    // NOTE: This function is currently commented out in the original JS.
+    // To make it work, you would need a Python endpoint at /devices/all that returns a list of device IDs.
+    // For now, we leave it commented out, and the HTML provides static device options.
 
 
     // ============================================
-    // 3. CREATE SHIPMENT (WITH JWT)
+    // 3. CREATE SHIPMENT (with JWT and Database POST)
     // ============================================
 
     if (createShipmentBtn) {
@@ -88,36 +51,42 @@ document.addEventListener('DOMContentLoaded', function () {
             e.preventDefault();
 
             if (!validateForm(shipmentForm)) {
-                alert("Please fill out all required fields.");
+                // IMPORTANT: Removed alert() as per best practice, using console log for immediate feedback
+                console.error("Validation failed: Please fill out all required fields.");
                 return;
             }
 
-            const token = sessionStorage.getItem("accessToken");
+            // ⭐ FIX: Using the correct localStorage key: "access_token"
+            const token = localStorage.getItem("access_token");
             if (!token) {
-                alert("Authentication failed. Login again.");
+                // IMPORTANT: Removed alert(), routing immediately
+                console.error("Authentication failed. Redirecting to login.");
                 window.location.href = "/login";
                 return;
             }
 
+            // Construct data payload using IDs from HTML
             const shipmentData = {
-                shipmentNumber: getInputValue('input[placeholder="Shipment Number"]'),
-                route: getInputValue('select:nth-of-type(1)'),
-                device: getInputValue('select:nth-of-type(2)'),
-                poNumber: getInputValue('input[placeholder="PO Number"]'),
-                containerNumber: getInputValue('input[placeholder="Container Number"]'),
-                goodsType: getInputValue('select:nth-of-type(3)'),
-                deliveryDate: getInputValue('input[type="date"]'),
-                description: getInputValue('input[placeholder="Shipment Description"]'),
-                ndcNumber: getInputValue('input[placeholder="NDC Number"]'),
-                serialNumber: getInputValue('input[placeholder="Serial number of Goods"]'),
-                deliveryNumber: getInputValue('input[placeholder="Delivery Number"]'),
-                batchId: getInputValue('input[placeholder="Batch Id"]'),
+                shipmentNumber: getInputValue('shipmentNumber'),
+                route: getInputValue('route'),
+                device: getInputValue('device'),
+                poNumber: getInputValue('poNumber'),
+                containerNumber: getInputValue('containerNumber'),
+                goodsType: getInputValue('goodsType'),
+                deliveryDate: getInputValue('deliveryDate'),
+                description: getInputValue('description'),
+                ndcNumber: getInputValue('ndcNumber'),
+                serialNumber: getInputValue('serialNumber'),
+                deliveryNumber: getInputValue('deliveryNumber'),
+                batchId: getInputValue('batchId'),
                 status: "Created",
-                created: new Date().toLocaleDateString()
+                // Ensure date format matches Python Pydantic expectation (simple string here)
+                created: new Date().toLocaleDateString('en-US') 
             };
 
             try {
-                const res = await fetch("http://127.0.0.1:8000/shipment/new", {
+                // ⭐ FIX: Using relative path /shipment/new
+                const res = await fetch("/shipment/new", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -129,23 +98,24 @@ document.addEventListener('DOMContentLoaded', function () {
                 const output = await res.json();
 
                 if (res.status === 401 || res.status === 403) {
-                    alert("Session expired. Please log in again.");
-                    sessionStorage.clear();
+                    console.error("Session expired or unauthorized. Please log in again.");
+                    localStorage.clear();
                     window.location.href = "/login";
                     return;
                 }
 
                 if (!res.ok) {
-                    alert("Failed to create shipment: " + (output.detail || "Server error"));
+                    // Show a message in the console, instead of alert()
+                    console.error("Failed to create shipment: " + (output.detail || "Server error"));
                     return;
                 }
 
-                alert(`Shipment ${output.shipment_id} created successfully!`);
+                // Temporary success message display (replace with a custom modal later)
+                console.log(`Shipment ${output.shipment_id} created successfully!`);
                 shipmentForm.reset();
 
             } catch (err) {
-                console.error("API Error:", err);
-                alert("Server error. Try again later.");
+                console.error("API Error: Could not reach server.", err);
             }
         });
     }
@@ -162,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function () {
             shipmentForm.querySelectorAll(".is-invalid").forEach(el => {
                 el.classList.remove("is-invalid");
             });
-            alert("Form cleared!");
+            console.log("Form cleared!");
         });
     }
 

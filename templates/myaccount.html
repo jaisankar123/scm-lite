@@ -11,8 +11,15 @@
 <body>
     <div class="bg"></div> 
 
+
     <nav class="desktop-sidebar" id="sidebar">
-        <div class="sidebar-header">Sidebar Menu</div>
+                <div class="sidebar-header">
+        <div id="sidebar-closer" aria-label="Close sidebar" role="button" tabindex="0" >
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
         <ul>
              <li><a href="/"><i></i> Home</a></li>
 
@@ -37,7 +44,9 @@
             </div>
 
             <div class="menu">
-                <div class="user-initial" id="headerUserInitial"></div> 
+                <!-- User initial in the top right corner -->
+                <div class="user-initial header-initial" id="headerUserInitial">U</div> 
+                <button id="logoutBtn" class="logout-btn">Logout</button>
             </div>
         </header>
 
@@ -46,15 +55,16 @@
                 <div class="profile-container">
                     <div class="user-initial" id="mainUserInitial">U</div> 
                     <div class="user-info">
-                        <h3 id="displayName">Loading...</h3>
-                        <p id="displayEmail">Loading...</p>
+                        <h3 id="displayName">Loading Name...</h3>
+                        <p id="displayEmail">Loading Email...</p>
                     </div>
                 </div>
 
                 <div class="account-details">
                     <h4>Account Details</h4>
-                    <p>Membership Status: **Active**</p>
-                    <p>Last Login: **Today**</p>
+                    <p>Membership Status: Active</p>
+            
+
                 </div>
             </div>
 
@@ -74,9 +84,8 @@
         </main>
     </div>
 
-  <!-- <script src="static/index.js"></script> -->
 <script src="static/myaccount.js"></script>
-<script src="/static/auth-check.js"></script>
+<script src="static/auth-check.js"></script>
 
 </body>
 </html>

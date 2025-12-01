@@ -1,44 +1,70 @@
-from fastapi import FastAPI, HTTPException, Request, Depends, status
-from fastapi.middleware.cors import CORSMiddleware 
-from fastapi.responses import HTMLResponse 
+from fastapi import FastAPI, HTTPException, Request, Depends, status, WebSocket, WebSocketDisconnect
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from models import SignupModel, LoginModel, ShipmentModel
-from pymongo import MongoClient 
-from database import users_collection
-from auth import hash_password, verify_password, create_access_token, decode_access_token, get_current_user
-from datetime import timedelta
+from fastapi.middleware.gzip import GZipMiddleware
+from models import SignupModel, LoginModel, ShipmentModel, DeviceListModel
+
+from database import db, USERS_COLLECTION, DEVICE_STREAM_DATA_COLLECTION
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+from auth import (
+    hash_password, 
+    verify_password, 
+    create_access_token, 
+    get_current_user,
+    get_websocket_user,
+    pwd_context
+)
+from config import settings
 import time
-from typing import List
-
-
+from typing import List, Dict, Any, Optional
+import json
+from datetime import datetime, timedelta
 
 app = FastAPI()
 
-# 1. Initialize Jinja2Templates
+# Add GZip compression
+app.add_middleware(GZipMiddleware, minimum_size=1000)
+
+# Initialize Jinja2Templates
 templates = Jinja2Templates(directory="templates") 
 
-# 2. Configure Static Files (Recommended for serving index.css and index.js)
+# Configure Static Files
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # ------------------ HELPER FOR SCM DATABASE ACCESS ------------------
 def get_scm_data_collection(collection_name: str):
     """Connects to the SCM database and returns a specific collection."""
-    client = MongoClient("mongodb://localhost:27017/")
-    db = client["scmlitedb"]
-    return db[collection_name]
-# --------------------------------------------------------------------
+    return db.get_collection(collection_name)
 
+users_collection = get_scm_data_collection(USERS_COLLECTION)
 
-# ------------------ CORS CONFIGURATION ------------------
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-# --------------------------------------------------------
+# Add WebSocket manager class
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: Dict[str, WebSocket] = {}
+
+    async def connect(self, websocket: WebSocket, client_id: str):
+        await websocket.accept()
+        self.active_connections[client_id] = websocket
+
+    def disconnect(self, client_id: str):
+        if client_id in self.active_connections:
+            del self.active_connections[client_id]
+
+    async def send_personal_message(self, message: str, client_id: str):
+        if client_id in self.active_connections:
+            await self.active_connections[client_id].send_text(message)
+
+    async def broadcast(self, message: str):
+        for connection in self.active_connections.values():
+            await connection.send_text(message)
+
+manager = ConnectionManager()
 
 # ------------------ FRONTEND ROUTES (Template Serving) ------------------
 
@@ -81,7 +107,7 @@ def signup(request: Request):
 def create_new_shipment(shipment: ShipmentModel, user_payload: dict = Depends(get_current_user)):
     """Saves a new user-created shipment to the shipments collection."""
     try:
-        collection = get_scm_data_collection("shipments_collection")
+        collection = get_scm_data_collection("shipment_data")
         
         shipment_data = shipment.dict()
         shipment_data['timestamp'] = int(time.time())
@@ -99,47 +125,57 @@ def create_new_shipment(shipment: ShipmentModel, user_payload: dict = Depends(ge
 
 @app.get("/shipment/my")
 def get_my_shipments(user_payload: dict = Depends(get_current_user)):
-    """Fetch shipments created by the logged-in user."""
+    """
+    Fetch shipments created by the logged-in user.
+    This route filters shipments based on the 'creator_email' matching
+    the authenticated user's email from the JWT payload.
+    """
     try:
-        collection = get_scm_data_collection("shipments_collection")
+        collection = get_scm_data_collection("shipment_data")
 
+        # MongoDB query to filter by the current user's email
         shipments = list(collection.find(
             {"creator_email": user_payload["email"]}
-        ))
+        ).sort('timestamp', -1)) # Sort by most recent first
 
+        # Convert ObjectId to string for JSON serialization
         for s in shipments:
             s["_id"] = str(s["_id"])
+            # Format the timestamp for display
+            if 'timestamp' in s and isinstance(s['timestamp'], int):
+                 s['createdOnDisplay'] = datetime.fromtimestamp(s['timestamp']).strftime('%Y-%m-%d %H:%M')
 
         return shipments
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        # Log the error for debugging
+        print(f"Error fetching user shipments: {e}")
+        raise HTTPException(status_code=500, detail="Failed to retrieve your shipment data.")
 
 
 # ------------------ 3. GET ACCOUNT DETAILS ------------------
 @app.get("/account/me/{email}")
 def get_user_details(email: str, user_payload: dict = Depends(get_current_user)):
-    """Fetches user details using their email from the auth database."""
     
-    if email != user_payload['email']:
-        raise HTTPException(status_code=403, detail="Not authorized to view this account.")
-        
+    if email != user_payload["email"]:
+        raise HTTPException(403, "Not authorized")
+
     db_user = users_collection.find_one({"email": email}, {"password": 0})
-    
+
     if not db_user:
-        raise HTTPException(status_code=404, detail="User not found")
-    
-    db_user['_id'] = str(db_user['_id'])
-    
+        raise HTTPException(404, "User not found")
+
+    db_user["_id"] = str(db_user["_id"])
     return db_user
+
 # ------------------------------------------------------------
 
 
 # ------------------ GET LATEST SCM DATA (POLLING) ------------------
 @app.get("/device-data")
-def get_latest_device_data(user=Depends(get_current_user)):
+def get_latest_device_data():
     """Fetches the latest 15 documents from the live device data collection."""
     try:
-        collection = get_scm_data_collection("shipment_data")
+        collection = get_scm_data_collection(DEVICE_STREAM_DATA_COLLECTION)
         
         latest_data = list(
             collection.find()
@@ -170,11 +206,14 @@ def signup_user(user: SignupModel):
     existing_user = users_collection.find_one({"email": user.email})
     if existing_user:
         raise HTTPException(status_code=400, detail="Email already registered")
+    print(user.password)
     users_collection.insert_one({
         "name": user.name,
         "email": user.email,
         "password": hash_password(user.password)
+        
     })
+    
     return {"message": "Signup successful!"}
 
 # Updated Login to return JWT
@@ -202,3 +241,48 @@ def login_user(user: LoginModel):
             "email": db_user["email"]
         }
     }
+
+@app.post("/shipment/new")
+def create_new_shipment(shipment: ShipmentModel, user_payload: dict = Depends(get_current_user)):
+    """Saves a new user-created shipment to the shipments collection."""
+    try:
+        # Use the collection name defined in database.py
+        shipments_collection = get_scm_data_collection("shipment_data")
+        
+        # Convert Pydantic model to dictionary
+        shipment_data = shipment.dict()
+        # Add metadata
+        shipment_data['timestamp'] = int(time.time())
+        shipment_data['creator_email'] = user_payload['email']
+        
+        insert_result = shipments_collection.insert_one(shipment_data)
+        
+        return {
+            "message": "Shipment created successfully",
+            "shipment_id": str(insert_result.inserted_id)
+        }
+    except Exception as e:
+        # Log the error for debugging purposes
+        print(f"Database error during shipment creation: {e}")
+        raise HTTPException(status_code=500, detail=f"Database error during shipment creation: {e}")
+# -----------------------------------------------------------
+
+@app.websocket("/ws/device-data")
+async def websocket_endpoint(websocket: WebSocket, token: str):
+    user = await get_websocket_user(websocket, token)
+    if not user:
+        return
+
+    client_id = f"{user['email']}_{int(time.time())}"
+    await manager.connect(websocket, client_id)
+    
+    try:
+        while True:
+            # Keep connection alive
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        manager.disconnect(client_id)
+        logger.info(f"Client {client_id} disconnected")
+    except Exception as e:
+        logger.error(f"WebSocket error: {e}")
+        manager.disconnect(client_id)
