@@ -39,7 +39,7 @@ document.getElementById("signupForm").addEventListener("submit", async function 
 
     // -------- BACKEND CALL -------- //
     try {
-        const response = await fetch("http://127.0.0.1:8000/signup", {
+        const response = await fetch("/signup", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -65,6 +65,6 @@ document.getElementById("signupForm").addEventListener("submit", async function 
     } catch (error) {
         console.error(error);
         message.style.color = "red";
-        message.textContent = "⚠ Server error! Check if FastAPI server is running at http://127.0.0.1:8000.";
+        message.textContent = "⚠ Server error!";
     }
 });

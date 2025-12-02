@@ -7,7 +7,7 @@ let currentSelectedDeviceId = null; // Track the currently selected device ID fo
 const tbody = document.getElementById("dataTableBody");
 const deviceIdSelect = document.getElementById("deviceId");
 const dataForm = document.getElementById("dataForm");
-const API_URL = "http://127.0.0.1:8000/device-data";
+const API_URL = "/device-data";
 // Reduced polling interval to 2 seconds for a more "stream-like" feel
 const POLLING_INTERVAL = 2000; 
 

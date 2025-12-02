@@ -207,6 +207,39 @@ def get_latest_device_data():
     except Exception as e:
         print(f"Database error: {e}")
         raise HTTPException(status_code=500, detail="Could not retrieve device data from database")
+    
+
+@app.post("/device-data/filter")
+def get_filtered_device_data(
+    device_list: DeviceListModel, 
+    user_payload: dict = Depends(get_current_user) # Secure the route
+):
+    """
+    Fetches the latest 15 documents from the live device data collection, 
+    filtered by the Device_ID list provided in the request body.
+    """
+    try:
+        collection = get_scm_data_collection(DEVICE_STREAM_DATA_COLLECTION)
+        
+        # 1. Create a query filter using the list of device IDs
+        filter_query = {"Device_ID": {"$in": device_list.devices}}
+        
+        # 2. Query the database
+        latest_data = list(
+            collection.find(filter_query)
+            .sort('_id', -1)
+            .limit(15)
+        )
+        
+        # 3. Serialize and return
+        for doc in latest_data:
+            doc['_id'] = str(doc['_id'])
+            
+        return latest_data
+        
+    except Exception as e:
+        print(f"Database error: {e}")
+        raise HTTPException(status_code=500, detail="Could not retrieve filtered device data.")    
 # --------------------------------------------------------------------
 
 

@@ -1,7 +1,7 @@
 // ========================
 // API ENDPOINT
 // ========================
-const SHIPMENTS_API_URL = "http://127.0.0.1:8000/shipment/my";
+const SHIPMENTS_API_URL = "/shipment/my";
 
 
 // ========================
