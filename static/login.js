@@ -1,11 +1,20 @@
 // Global state to track if we are waiting for the 2FA code
 let isTwoFactorPending = false;
-let pendingEmail = ""; // Store email temporarily for the 2FA submission
+let pendingEmail = ""; 
+
+// Helper function to reset the reCAPTCHA widget
+function resetCaptcha() {
+    // Check if the global grecaptcha object exists
+    if (typeof grecaptcha !== 'undefined') {
+        grecaptcha.reset();
+    }
+}
+
 
 document.getElementById("loginForm").addEventListener("submit", async function(event) {
     event.preventDefault();
 
-    // GET ALL REQUIRED ELEMENTS (Matching IDs from corrected login.html)
+    // GET ALL REQUIRED ELEMENTS
     const emailInput = document.getElementById("email");
     const passwordInput = document.getElementById("password");
     const codeInput = document.getElementById("code");
@@ -13,38 +22,57 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
     const credentialsGroup = document.getElementById("credentialsGroup");
     const twoFactorGroup = document.getElementById("twoFactorGroup");
     const mainSubmitBtn = document.getElementById("mainSubmitBtn");
-    const loginTitle = document.getElementById("login-title"); // NEW: Capture the title element
+    const loginTitle = document.getElementById("login-title");
 
     // Get current values
     const email = emailInput.value.trim();
     const password = passwordInput.value.trim();
-    const code = codeInput.value.trim();
+    const code = codeInput ? codeInput.value.trim() : ""; 
     
     message.textContent = "";
 
     // Determine which step we are in
     if (!isTwoFactorPending) {
-        // --- STEP 1: LOGIN (Email & Password) ---
-        try {
-
-            if (!email || !password) {
+        // --- STEP 1: LOGIN (Email, Password, & CAPTCHA) ---
+        
+        // 1. Client-side validation check
+        if (!email || !password) {
             message.style.color = "red";
             message.textContent = "Please enter both email and password.";
             return;
         }
+
+        // 2. CAPTCHA Check
+        const captchaToken = grecaptcha.getResponse();
+        if (!captchaToken) {
+            message.style.color = "red";
+            message.textContent = "Please complete the reCAPTCHA challenge.";
+            return;
+        }
+
+
+        try {
             mainSubmitBtn.disabled = true;
             mainSubmitBtn.textContent = "Logging In...";
+
+            // 3. Include captchaToken in the payload
+            const payload = {
+                email: email,
+                password: password,
+                captcha_token: captchaToken // Send token to backend for verification
+            };
 
             const response = await fetch("/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password })
+                body: JSON.stringify(payload)
             });
 
             const data = await response.json();
             
             mainSubmitBtn.disabled = false;
-            // The button text is reset later if it fails, or changed if 2FA starts
+            resetCaptcha(); // Always reset CAPTCHA widget after a submission attempt
+
 
             if (response.status === 202) {
                 // SUCCESS: Credentials valid, 2FA code sent (HTTP 202)
@@ -52,7 +80,7 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
                 isTwoFactorPending = true;
                 
                 // Switch UI to 2FA mode
-                loginTitle.textContent = "Verify Code"; // Change title
+                loginTitle.textContent = "Verify Code";
                 credentialsGroup.style.display = "none";
                 twoFactorGroup.style.display = "block";
                 mainSubmitBtn.textContent = "Verify Code";
@@ -63,13 +91,12 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
 
             } else if (!response.ok) {
                 // Standard login failure (401, 404, etc.)
-                mainSubmitBtn.textContent = "Login"; // Reset button text
+                mainSubmitBtn.textContent = "Login";
                 message.style.color = "red";
-                message.textContent = data.detail || "Login failed. Check your email and password.";
+                // Display specific error detail, or a generic one
+                message.textContent = data.detail || "Login failed. Check your credentials or try re-submitting CAPTCHA.";
                 return;
             }
-
-
 
         } catch (err) {
             console.error(err);
@@ -77,10 +104,13 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
             mainSubmitBtn.textContent = "Login";
             message.style.color = "red";
             message.textContent = "Server error during login attempt.";
+            resetCaptcha(); // Reset CAPTCHA on server error
         }
     } else {
         // --- STEP 2: 2FA CODE VERIFICATION ---
-        if (code.length !== 6) {
+        
+        // Client-side validation check
+        if (!code || code.length !== 6) {
             message.style.color = "red";
             message.textContent = "Please enter the 6-digit code.";
             return;
@@ -93,7 +123,7 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
             const response = await fetch("/verify-2fa", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email: pendingEmail, code: code }) // Use stored email
+                body: JSON.stringify({ email: pendingEmail, code: code })
             });
 
             const data = await response.json();

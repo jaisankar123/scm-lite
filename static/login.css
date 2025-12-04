@@ -296,6 +296,17 @@ LOGIN FORM SPECIFIC STYLES (New)
 }
 
 /* ==========================
+RECAPTCHA STYLES (NEW)
+========================== */
+.recaptcha-container {
+    display: flex; /* Use flex to center the reCAPTCHA widget */
+    justify-content: center;
+    margin-top: 10px;
+    margin-bottom: 25px;
+    /* Since the widget is fixed width, centering it looks best */
+}
+
+/* ==========================
 REGISTER/FORGOT PASSWORD LINK STYLES (Standardized)
 ========================== */
 /* Standardize the look for both register and back-to-login links */
