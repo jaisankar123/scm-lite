@@ -15,6 +15,12 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = os.getenv("JWT_ALGORITHM", "HS256")
     ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
     ZOOKEEPER_CLIENT_PORT: str = int(os.getenv("ZOOKEEPER_CLIENT_PORT", "2181"))
+
+
+    EMAIL_HOST: str = os.getenv("EMAIL_HOST", "smtp.gmail.com")
+    EMAIL_PORT: int = int(os.getenv("EMAIL_PORT", "587"))
+    EMAIL_USERNAME: str = os.getenv("EMAIL_USERNAME", "scmlite57@gmail.com")
+    EMAIL_PASSWORD: str = os.getenv("EMAIL_PASSWORD", "wfgc lfxo flem rkzh")
     
     @property
     def kafka_bootstrap_servers(self) -> List[str]:
@@ -25,3 +31,6 @@ class Settings(BaseSettings):
         extra = "ignore"
 
 settings = Settings()
+
+
+

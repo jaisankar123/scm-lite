@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('headerUserInitial').textContent = initial; // Set header initial
 
         try {
-            // ⭐ FIX: Removed hardcoded IP and port, using relative path
+            // FIX: Removed hardcoded IP and port, using relative path
             const res = await fetch(`/account/me/${userEmail}`, {
                 method: 'GET',
                 headers: {

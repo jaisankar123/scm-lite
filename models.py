@@ -30,3 +30,10 @@ class ShipmentModel(BaseModel):
 # --- New Model for Device List ---
 class DeviceListModel(BaseModel):
     devices: List[str]
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+class PasswordResetRequest(BaseModel):
+    token: str # The token received via email link
+    new_password: str

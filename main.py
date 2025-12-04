@@ -5,6 +5,9 @@ from fastapi.templating import Jinja2Templates
 from fastapi.middleware.gzip import GZipMiddleware
 from models import SignupModel, LoginModel, ShipmentModel, DeviceListModel
 from fastapi.middleware.cors import CORSMiddleware
+from auth import create_password_reset_token
+from email_service import send_password_reset_email # The file we just created
+from models import  ForgotPasswordRequest 
 
 from database import db, USERS_COLLECTION, DEVICE_STREAM_DATA_COLLECTION
 import logging
@@ -115,6 +118,64 @@ def login(request: Request):
 @app.get("/signup", response_class=HTMLResponse)
 def signup(request: Request):
     return templates.TemplateResponse("signup.html", {"request": request})
+
+@app.get("/forgot-password", response_class=HTMLResponse)
+def forgot_password(request: Request):
+    return templates.TemplateResponse("forgot-password.html", {"request": request})
+
+@app.post("/reset-password-request")
+async def handle_reset_request(request: ForgotPasswordRequest):
+    """
+    Receives email, generates reset token, updates DB, and sends email.
+    Uses generic success message for security.
+    """
+    try:
+        # 1. Find the user in the database
+        db_user = users_collection.find_one({"email": request.email})
+        
+        # 2. Security Check: Always return generic success regardless of user existence.
+        if not db_user:
+            return {"message": "If an account is associated with this email, a reset link has been sent."}
+
+        # 3. Generate a Password Reset Token (e.g., expires in 15 minutes)
+        reset_token_expires = timedelta(minutes=15)
+        reset_token = create_password_reset_token(
+            data={"sub": request.email}, expires_delta=reset_token_expires
+        )
+        
+        # 4. Save the Token and Expiration to the User's Database Document
+        expiry_timestamp = datetime.utcnow() + reset_token_expires
+        
+        users_collection.update_one(
+            {"_id": db_user["_id"]},
+            {
+                "$set": {
+                    "reset_token": reset_token,
+                    "reset_token_expires": expiry_timestamp
+                }
+            }
+        )
+        
+        # 5. Construct the full reset URL
+        # NOTE: You MUST replace this with your EC2 Public IP or actual domain name!
+        RESET_DOMAIN = "https//:127.0.0.1/" # Use HTTPS in production
+        reset_url = f"{RESET_DOMAIN}/reset-password?token={reset_token}"
+        
+        # 6. Send the Email
+        email_sent = await send_password_reset_email(request.email, reset_url)
+        
+        if not email_sent and settings.EMAIL_HOST != "smtp.example.com":
+             # Log a failure, but still return a generic success to the user (security)
+             logger.error(f"EMAIL SEND FAILURE for {request.email}")
+
+        # 7. Final Response (Generic Success)
+        return {"message": "A reset link has been sent."}
+    
+    except Exception as e:
+        logger.error(f"Password reset request failed: {e}")
+        return {"message": "If an account is associated with this email, a reset link has been sent."}
+
+
 # ------------------------------------------------------------------------
 
 

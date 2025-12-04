@@ -67,3 +67,18 @@ def hash_password(password: str) -> str:
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
+
+#for password reset token
+def create_password_reset_token(data: dict, expires_delta: Optional[timedelta] = None):
+    """Creates a short-lived JWT for password reset purposes (e.g., 15 minutes)."""
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        # Default expiration for reset token is very short, e.g., 15 minutes
+        expire = datetime.utcnow() + timedelta(minutes=15) 
+    to_encode.update({"exp": expire})
+    
+    # Use the existing settings for secret key and algorithm
+    encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
+    return encoded_jwt
