@@ -3,11 +3,13 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.gzip import GZipMiddleware
-from models import SignupModel, LoginModel, ShipmentModel, DeviceListModel
+from models import SignupModel, LoginModel, ShipmentModel, DeviceListModel, TwoFactorVerifyModel
 from fastapi.middleware.cors import CORSMiddleware
 from auth import create_password_reset_token
-from email_service import send_password_reset_email # The file we just created
-from models import  ForgotPasswordRequest 
+from email_service import send_password_reset_email, send_2fa_code_email # The file we just created
+from models import  ForgotPasswordRequest, PasswordResetRequest
+from jose import JWTError, jwt
+import secrets
 
 from database import db, USERS_COLLECTION, DEVICE_STREAM_DATA_COLLECTION
 import logging
@@ -123,6 +125,74 @@ def signup(request: Request):
 def forgot_password(request: Request):
     return templates.TemplateResponse("forgot-password.html", {"request": request})
 
+# --- In main.py, near your other template routes ---
+
+@app.get("/reset-password", response_class=HTMLResponse)
+def reset_password(request: Request):
+    """Serves the password reset form page."""
+    return templates.TemplateResponse("reset-password.html", {"request": request})
+
+# Note: No changes needed to the app.include_router(reset_router) line
+
+# --- Add this function to your existing reset_routes.py file ---
+
+
+# ... existing code for APIRouter and handle_reset_request ...
+
+@app.post("/reset-password-confirm")
+async def handle_reset_confirm(request: PasswordResetRequest):
+    """
+    Validates the reset token and updates the user's password.
+    """
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail="Invalid or expired reset token.",
+    )
+    
+    try:
+        # 1. Decode and validate the token (checks expiry automatically)
+        payload = jwt.decode(
+            request.token, 
+            settings.JWT_SECRET_KEY, 
+            algorithms=[settings.JWT_ALGORITHM]
+        )
+        email: str = payload.get("sub")
+        if email is None:
+            raise credentials_exception
+
+    except JWTError:
+        raise credentials_exception
+
+    # 2. Find the user and validate the token status in the database
+    db_user = users_collection.find_one({"email": email})
+
+    if not db_user or db_user.get("reset_token") != request.token:
+        # Token doesn't match the one stored (or user not found)
+        raise credentials_exception
+    
+    if db_user.get("reset_token_expires") < datetime.utcnow():
+        # Token has expired
+        raise credentials_exception
+
+    # 3. Hash the new password
+    hashed_password = hash_password(request.new_password)
+
+    # 4. Update the password and clear the reset token fields
+    users_collection.update_one(
+        {"_id": db_user["_id"]},
+        {
+            "$set": {
+                "password": hashed_password
+            },
+            "$unset": {
+                "reset_token": "",
+                "reset_token_expires": ""
+            }
+        }
+    )
+
+    return {"message": "Password updated successfully."}
+
 @app.post("/reset-password-request")
 async def handle_reset_request(request: ForgotPasswordRequest):
     """
@@ -158,7 +228,7 @@ async def handle_reset_request(request: ForgotPasswordRequest):
         
         # 5. Construct the full reset URL
         # NOTE: You MUST replace this with your EC2 Public IP or actual domain name!
-        RESET_DOMAIN = "https//:127.0.0.1/" # Use HTTPS in production
+        RESET_DOMAIN = "https//:127.0.0.1:8000" # Use HTTPS in production
         reset_url = f"{RESET_DOMAIN}/reset-password?token={reset_token}"
         
         # 6. Send the Email
@@ -327,24 +397,88 @@ def signup_user(user: SignupModel):
     return {"message": "Signup successful!"}
 
 # Updated Login to return JWT
-@app.post("/login")
-def login_user(user: LoginModel):
+# Updated Login to implement 2FA
+@app.post("/login", status_code=status.HTTP_202_ACCEPTED) # Set default status to 202
+async def login_user(user: LoginModel):
     db_user = users_collection.find_one({"email": user.email})
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
-    # This is the line that generates the "Incorrect password" detail
+    
     if not verify_password(user.password, db_user["password"]):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect password")
     
-    # --- JWT Creation ---
+    # 1. Generate 6-digit code
+    # NOTE: secrets.randbelow(1000000) generates a number from 0 to 999999
+    code = str(secrets.randbelow(1000000)).zfill(6) 
+    code_expiry = datetime.utcnow() + timedelta(minutes=5)
+
+    # 2. Save code and expiry to the database
+    users_collection.update_one(
+        {"_id": db_user["_id"]},
+        {
+            "$set": {
+                "two_factor_code": code,
+                "code_expires_at": code_expiry
+            }
+        }
+    )
+
+    # 3. Send the code via email
+    await send_2fa_code_email(user.email, code)
+
+    # 4. Return 202 status to client, prompting for the 2FA code
+    # The client-side logic (login.js) expects this 202 status.
+    return {
+        "message": "Two-factor authentication required. Code sent to email.", 
+        "email": user.email
+    }
+
+
+# NEW ROUTE: Verify 2FA Code
+@app.post("/verify-2fa")
+def verify_two_factor_code(request: TwoFactorVerifyModel):
+    db_user = users_collection.find_one({"email": request.email})
+
+    # Basic user/code existence check
+    if not db_user or db_user.get("two_factor_code") is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, 
+            detail="Verification process timed out or is invalid."
+        )
+
+    # 1. Check if the code has expired
+    if db_user.get("code_expires_at") < datetime.utcnow():
+        # Clear the expired code
+        users_collection.update_one(
+            {"_id": db_user["_id"]},
+            {"$unset": {"two_factor_code": "", "code_expires_at": ""}}
+        )
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, 
+            detail="Verification code expired. Please log in again."
+        )
+
+    # 2. Check if the code matches
+    if request.code != db_user["two_factor_code"]:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, 
+            detail="Incorrect verification code."
+        )
+    
+    # 3. SUCCESS: Clear the code and generate the final JWT
+    users_collection.update_one(
+        {"_id": db_user["_id"]},
+        {"$unset": {"two_factor_code": "", "code_expires_at": ""}}
+    )
+
     access_token_expires = timedelta(minutes=30)
     access_token = create_access_token(
-        data={"sub": user.email}, expires_delta=access_token_expires
+        data={"sub": request.email}, expires_delta=access_token_expires
     )
     
     return {
-        "message": "Login successful!", 
-        "access_token": access_token, # Send JWT
+        "message": "Verification successful!", 
+        "access_token": access_token, 
         "token_type": "bearer",
         "user_data": {
             "name": db_user["name"], 

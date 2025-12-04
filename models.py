@@ -37,3 +37,7 @@ class ForgotPasswordRequest(BaseModel):
 class PasswordResetRequest(BaseModel):
     token: str # The token received via email link
     new_password: str
+
+class TwoFactorVerifyModel(BaseModel):
+    email: str
+    code: str
