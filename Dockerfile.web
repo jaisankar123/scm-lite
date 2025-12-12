@@ -12,7 +12,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy only the necessary application files for the web app (main.py, etc.)
 # If your project is structured with subfolders, adjust the COPY command
-COPY main.py /app/
+COPY . .
 # Add any other required files (e.g., config, routes)
 
 # Expose the port Uvicorn runs on
