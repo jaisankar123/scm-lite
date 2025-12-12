@@ -1,0 +1,22 @@
+# Dockerfile.web
+# Use a slim base image for smaller size
+FROM python:3.11-slim
+
+# Set the working directory
+WORKDIR /app
+
+# Install dependencies needed for the web-app
+# Assuming requirements.txt contains FastAPI, Uvicorn, and other necessary libs
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy only the necessary application files for the web app (main.py, etc.)
+# If your project is structured with subfolders, adjust the COPY command
+COPY main.py /app/
+# Add any other required files (e.g., config, routes)
+
+# Expose the port Uvicorn runs on
+EXPOSE 8000
+
+# The final command is set in docker-compose.yml for flexibility
+ENTRYPOINT ["python"]
