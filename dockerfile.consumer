@@ -1,0 +1,16 @@
+# Dockerfile.consumer
+# Use a slim base image
+FROM python:3.11-slim
+
+# Set the working directory
+WORKDIR /app
+
+# Install dependencies for Kafka and MongoDB
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the consumer script
+COPY consumer.py /app/
+
+# The final command is set in docker-compose.yml for flexibility
+ENTRYPOINT ["python"]
