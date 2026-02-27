@@ -24,3 +24,26 @@ if (token) {
     if (loginBtn) loginBtn.style.display = "none";
     if (signupBtn) signupBtn.style.display = "none";
 }
+
+
+// ======================
+// SIDEBAR TOGGLE LOGIC (FIX)
+// ======================
+
+const sidebar = document.getElementById("sidebar");
+const hamburger = document.getElementById("hamburger");
+const sidebarCloser = document.getElementById("sidebar-closer");
+
+function toggleSidebar() {
+    sidebar.classList.toggle("open");
+}
+
+// 1. Open sidebar when hamburger is clicked
+if (hamburger) {
+    hamburger.addEventListener("click", toggleSidebar);
+}
+
+// 2. Close sidebar when 'X' (sidebar closer) is clicked
+if (sidebarCloser) {
+    sidebarCloser.addEventListener("click", toggleSidebar);
+}

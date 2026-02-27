@@ -5,24 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My Account</title>
     <link rel="stylesheet" href="static/login.css" /> 
+    <link rel="stylesheet" href="static/index.css" /> 
     <link rel="stylesheet" href="static/myaccount.css" />
-
 </head>
 <body>
     <div class="bg"></div> 
 
-
     <nav class="desktop-sidebar" id="sidebar">
-                <div class="sidebar-header">
-        <div id="sidebar-closer" aria-label="Close sidebar" role="button" tabindex="0" >
-            <span></span>
-            <span></span>
-            <span></span>
+        <div class="sidebar-header">
+            <div id="sidebar-closer" aria-label="Close sidebar" role="button" tabindex="0">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
         </div>
-    </div>
         <ul>
-             <li><a href="/"><i></i> Home</a></li>
-
+            <li><a href="/">Home</a></li>
             <li><a href="/dashboard">Dashboard</a></li>
             <li class="active-sidebar-link"><a href="/myaccount">My Account</a></li>
             <li><a href="/myshipment">My Shipments</a></li>
@@ -30,24 +28,18 @@
             <li><a href="/device-data-stream">Device Data</a></li>
         </ul>
     </nav>
+
     <div class="main-area">
-
-        <header>
-            <div class="logo-container">
-                <h2 class="logo">My Account</h2> 
+        <header class="mobile-header">
+            <div class="header-left">
+                <div id="hamburger" aria-label="Open sidebar" role="button" tabindex="0">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <h2 class="logo" class="header-title">My Account</h2> 
             </div>
-
-            <div id="hamburger" aria-label="Open sidebar" role="button" tabindex="0">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-
-            <div class="menu">
-                <!-- User initial in the top right corner -->
-                <div class="user-initial header-initial" id="headerUserInitial">U</div> 
-                <button id="logoutBtn" class="logout-btn">Logout</button>
-            </div>
+            <div class="header-right"></div>
         </header>
 
         <main class="content" role="main">
@@ -62,30 +54,27 @@
 
                 <div class="account-details">
                     <h4>Account Details</h4>
-                    <p>Membership Status: Active</p>
-            
-
+                    <p>Membership Status: <span class="status-active">Active</span></p>
+                    
+                    <button id="logoutBtn" class="logout-btn card-logout">Logout</button>
                 </div>
             </div>
 
-            <div class="help-section">
+            <!-- <div class="help-section">
                 <p>Need assistance? Click <a href="#" id="helpLink">Help</a> to send a message to support.</p>
-
                 <div id="messageForm">
                     <form id="contactForm">
-                        <p>Send a message to **jaisankar.nb66@gmail.com**:</p>
+                        <p>Send a message to support:</p>
                         <textarea id="messageText" placeholder="Type your message here..." required></textarea>
                         <button type="submit">Send Message</button>
                     </form>
                     <p id="contactMessage"></p>
                 </div>
-            </div>
-
+            </div> -->
         </main>
     </div>
 
-<script src="static/myaccount.js"></script>
-<script src="static/auth-check.js"></script>
-
+    <script src="static/myaccount.js"></script>
+    <script src="static/auth-check.js"></script>
 </body>
 </html>

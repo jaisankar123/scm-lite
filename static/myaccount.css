@@ -1,14 +1,60 @@
-/* Basic styling for myaccount components (you'll want to move this to a proper CSS file) */
+/* Header Styling */
+header.mobile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Update this section in myaccount.css */
+
+.header-left {
+    display: flex;
+    flex-direction: row; /* Forces horizontal alignment: Hamburger first, then Title */
+    align-items: center;
+    justify-content: flex-start; /* Aligns both to the start (left) */
+    gap: 15px; 
+}
+
+#hamburger {
+    order: 1; /* Ensures the hamburger stays first */
+}
+
+.header-left .logo {
+    order: 2; /* Ensures the title stays second */
+}
+
+
+.header-left .logo {
+    margin: 0;           /* Removes default heading margins that might push it down */
+    font-size: 1.5rem;   /* Adjust size as needed */
+    color: #5e35b1;        /* Ensure it's visible against your background */
+}
+
+
+
+/* Profile Card Styling */
+.details-container {
+    padding: 25px;
+    border: 1px solid #00bcd4;
+    border-radius: 12px;
+    background-color: #f3ebeb;
+    margin: 20px;
+}
+
 .profile-container {
     display: flex;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
+
 .user-initial {
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background-color: #00bcd4; /* Neon blue color */
+    background-color: #00bcd4;
     color: white;
     display: flex;
     justify-content: center;
@@ -16,96 +62,49 @@
     font-size: 28px;
     font-weight: bold;
     margin-right: 20px;
-    flex-shrink: 0; /* Prevents shrinking on smaller screens */
-}
-/* Style for the initial in the top header */
-.header .user-initial {
-    width: 40px;
-    height: 40px;
-    font-size: 18px;
-    margin-left: 15px;
-    cursor: pointer;
-    transition: transform 0.2s;
-}
-.header .user-initial:hover {
-    transform: scale(1.1);
 }
 
-.user-info h3 {
-    margin: 0;
-    color: #00bcd4;
-}
-.user-info p {
-    margin: 5px 0 0 0;
-    color: #ccc;
-}
-.details-container {
-    padding: 20px;
-    border: 1px solid #00bcd4;
-    border-radius: 8px;
-    background-color: #1a1a1a;
-}
-.account-details h4 {
-    color: #7af58b;
-    border-bottom: 1px solid #333;
-    padding-bottom: 5px;
-    margin-top: 15px;
-}
-.account-details p {
-    color: #eee;
-    margin-bottom: 8px;
-}
+.user-info h3 { margin: 0; color: #00bcd4; }
+.user-info p { margin: 5px 0; color: #ccc; }
 
-.help-section {
-    margin-top: 30px;
-}
-#messageForm {
-    display: none; /* Hidden by default */
-    margin-top: 15px;
-    padding: 15px;
-    border: 1px solid #7af58b;
-    border-radius: 5px;
-    background-color: #0f0f0f;
-}
-#messageForm textarea {
-    width: 100%;
-    min-height: 100px;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #444;
-    background-color: #222;
-    color: white;
-    box-sizing: border-box;
-    resize: vertical;
-}
-#messageForm button {
-    background-color: #7af58b;
-    color: black;
-    border: none;
-    padding: 10px 15px;
-    cursor: pointer;
-    border-radius: 4px;
-
-}
-.active-sidebar-link {
-
-    background: var(--hover-gradient); /* Use existing hover background */
-    border-radius: 8px;
-    margin: 6px 12px;
-    transform: translateX(8px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);}
-
-/* Logout Button Styling */
-.logout-btn {
+/* Logout Button inside the Card */
+.logout-btn.card-logout {
     background-color: #f44336;
     color: white;
     border: none;
-    padding: 8px 15px;
-    border-radius: 4px;
+    padding: 10px 20px;
+    border-radius: 6px;
     cursor: pointer;
-    margin-left: 20px;
+    margin-top: 15px; /* Directly below membership status */
+    font-weight: bold;
     transition: background-color 0.2s;
+    width: 100%; /* Makes it easy to tap on mobile */
+    max-width: 120px;
 }
-.logout-btn:hover {
+
+.logout-btn.card-logout:hover {
     background-color: #d32f2f;
+}
+
+.status-active {
+    color: #24a035;
+    font-weight: bold;
+}
+
+#displayEmail {
+    color: #0a0a0a;
+    font-weight: bold;
+}
+
+/* Help Section */
+.help-section { padding: 0 20px; color: #eee; }
+#helpLink { color: #00bcd4; text-decoration: underline; }
+
+
+
+.header-title {
+    font-size: 1.8em;
+    font-weight: normal;
+    color: #333;
+    margin: 0;
 }

@@ -241,6 +241,9 @@ transform: translateY(-9px) rotate(-45deg);
 #hamburger {
     display: flex;
 }
+.desktop-sidebar.open + .main-area header .logo-container #hamburger {
+        display: none;
+    }
 
 .desktop-sidebar {
     box-shadow: 0 12px 40px rgba(0,0,0,0.25);
@@ -308,4 +311,20 @@ opacity: 0.9;
 line-height: 1.6;
 transition: 0.2s;
 /* Removed neon effects */
+}
+
+/* Add this new rule to the CSS */
+/* FIX: Prevents header content from being overlapped by the open sidebar on mobile */
+@media (max-width: 999px) {
+    .desktop-sidebar.open + .main-area header {
+        /* Push the header content to the right by the width of the sidebar */
+        margin-left: var(--sidebar-width);
+        transition: margin-left 0.38s cubic-bezier(.2,.9,.2,1); /* Match sidebar transition */
+    }
+
+    /* Optional: Ensure the menu (Login/Signup buttons) stays aligned to the right */
+    .desktop-sidebar.open + .main-area header .menu {
+        transform: translateX(calc(0px - var(--sidebar-width)));
+        transition: transform 0.38s cubic-bezier(.2,.9,.2,1);
+    }
 }

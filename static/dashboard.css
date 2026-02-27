@@ -124,3 +124,24 @@ header .logo-container {
         font-size: 1.4em;
     }
 }
+
+/* ADD THIS TO YOUR DASHBOARD CSS */
+@media (max-width: 999px) {
+    /* FIX: Prevents header content from being overlapped by the open sidebar on mobile */
+    .desktop-sidebar.open + .main-area header {
+        /* Push the header content to the right by the width of the sidebar */
+        margin-left: var(--sidebar-width);
+        transition: margin-left 0.38s cubic-bezier(.2,.9,.2,1); /* Match sidebar transition */
+    }
+
+    /* Optional: Ensure the menu (Auth Buttons) stays aligned to the right */
+    .desktop-sidebar.open + .main-area header .menu {
+        transform: translateX(calc(0px - var(--sidebar-width)));
+        transition: transform 0.38s cubic-bezier(.2,.9,.2,1);
+    }
+    
+    /* FIX: Hide the hamburger completely when the sidebar is open (to avoid the double 'X') */
+    .desktop-sidebar.open + .main-area header .logo-container #hamburger {
+        display: none;
+    }
+}

@@ -90,3 +90,43 @@
             color: #888;
             font-style: italic;
         }
+
+
+        /* ==========================
+MOBILE VIEW FIXES (Add to myshipment.css)
+========================== */
+@media (max-width: 999px) {
+
+    /* --- Step 1: Ensure the header uses space-between to push menu to the right --- */
+    /* This overrides any centering that might be happening on smaller screens */
+    .main-area header {
+        justify-content: space-between;
+        width: 100%; /* Ensure it spans the full width */
+    }
+
+    /* --- Step 2: Push the entire header container over --- */
+    .desktop-sidebar.open + .main-area header {
+        /* This pushes the header to the right */
+        margin-left: var(--sidebar-width) !important;
+        transition: margin-left 0.38s cubic-bezier(.2,.9,.2,1);
+    }
+
+    /* --- Step 3: CRITICAL FIX: Anchor the right-aligned menu back to the left --- */
+    .desktop-sidebar.open + .main-area header .menu {
+        /* This negative transform COUNTERACTS the margin-left shift in Step 2.
+           Since the menu is the far-right item (due to justify-content: space-between),
+           this pulls it back to its original fixed viewport position. */
+        transform: translateX(calc(0px - var(--sidebar-width))) !important;
+        transition: transform 0.38s cubic-bezier(.2,.9,.2,1);
+        margin: 0 !important; /* Clear any residual centering margins */
+        display: block;
+        /* Increase specificity if needed */
+        position: relative;
+        z-index: 10;
+    }
+    
+    /* --- Step 4: Hide the hamburger when the sidebar is open --- */
+    .desktop-sidebar.open + .main-area header .logo-container #hamburger {
+        display: none;
+    }
+}
