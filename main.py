@@ -228,7 +228,7 @@ async def handle_reset_request(request: ForgotPasswordRequest):
         
         # 5. Construct the full reset URL
         # NOTE: You MUST replace this with your EC2 Public IP or actual domain name!
-        RESET_DOMAIN = "https//:127.0.0.1:8000" # Use HTTPS in production
+        RESET_DOMAIN = "https://127.0.0.1:8000" # Use HTTPS in production
         reset_url = f"{RESET_DOMAIN}/reset-password?token={reset_token}"
         
         # 6. Send the Email
