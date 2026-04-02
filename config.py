@@ -7,20 +7,20 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Settings(BaseSettings):
-    MONGODB_URI: str = os.getenv("MONGODB_URI", "mmongodb+srv://jaisankarnb66:jaisankarnoob@scmjai.hhh5gt5.mongodb.net/?appName=scmjai")
-    DATABASE_NAME: str = os.getenv("DATABASE_NAME", "scmlitedb")
-    KAFKA_BOOTSTRAP_SERVERS: str = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092")
-    KAFKA_TOPIC: str = os.getenv("KAFKA_TOPIC", "device_stream_data")
-    JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "your-secret-key-here")
-    JWT_ALGORITHM: str = os.getenv("JWT_ALGORITHM", "HS256")
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
-    ZOOKEEPER_CLIENT_PORT: str = int(os.getenv("ZOOKEEPER_CLIENT_PORT", "2181"))
+    MONGODB_URI: str = os.getenv("MONGODB_URI")
+    DATABASE_NAME: str = os.getenv("DATABASE_NAME")
+    KAFKA_BOOTSTRAP_SERVERS: str = os.getenv("KAFKA_BOOTSTRAP_SERVERS")
+    KAFKA_TOPIC: str = os.getenv("KAFKA_TOPIC")
+    JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY")
+    JWT_ALGORITHM: str = os.getenv("JWT_ALGORITHM")
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
+    ZOOKEEPER_CLIENT_PORT: str = int(os.getenv("ZOOKEEPER_CLIENT_PORT"))
 
 
-    EMAIL_HOST: str = os.getenv("EMAIL_HOST", "smtp.gmail.com")
-    EMAIL_PORT: int = int(os.getenv("EMAIL_PORT", "587"))
-    EMAIL_USERNAME: str = os.getenv("EMAIL_USERNAME", "scmlite57@gmail.com")
-    EMAIL_PASSWORD: str = os.getenv("EMAIL_PASSWORD", "wfgc lfxo flem rkzh")
+    EMAIL_HOST: str = os.getenv("EMAIL_HOST")
+    EMAIL_PORT: int = int(os.getenv("EMAIL_PORT"))
+    EMAIL_USERNAME: str = os.getenv("EMAIL_USERNAME")
+    EMAIL_PASSWORD: str = os.getenv("EMAIL_PASSWORD")
     
     @property
     def kafka_bootstrap_servers(self) -> List[str]:
